@@ -35,9 +35,9 @@ h1{font-size:18px;margin:0 0 10px}
 .variant{font-size:11px;color:var(--accent);margin-top:3px}
 .meta{font-size:10px;color:var(--muted);margin-top:3px}
 .price{font-size:12px;font-weight:700;margin-top:3px}
-.qty{display:grid;grid-template-columns:30px 48px 30px;gap:4px;align-items:center}
+.qty{display:grid;grid-template-columns:34px 58px 34px;gap:5px;align-items:center}
 .qty button{border:0;border-radius:8px;padding:6px 0;background:var(--accent);color:#fff;font-size:17px;font-weight:700}
-.qty input{width:48px;padding:6px;border:1px solid var(--line);border-radius:8px;text-align:center}
+.qty input{width:58px;padding:7px 4px;border:1px solid var(--line);border-radius:9px;text-align:center;font-size:18px;font-weight:800;color:var(--accent);background:#fff}
 footer{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:30}
 footer button{flex:1;border:0;border-radius:10px;padding:10px;background:var(--accent);color:#fff;font-weight:700}
 footer button.secondary{background:#fff;color:var(--accent);border:1px solid var(--line)}
@@ -166,7 +166,7 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
       <input id="purchaserName" maxlength="20" placeholder="例：わたし、友だちA" required>
     </label>
     <div class="dialogactions">
-      <button class="cancel" value="cancel">キャンセル</button>
+      <button type="button" class="cancel" id="cancelPurchaser">キャンセル</button>
       <button class="save" id="savePurchaser" value="default">追加</button>
     </div>
   </form>
@@ -397,6 +397,12 @@ function updateBonus() {
     buyerBonus(app.activePurchaserId)[key]=Math.max(0,Number(el.value)||0);
     saveApp(); updateBonus();
   });
+});
+
+document.getElementById('cancelPurchaser').addEventListener('click',()=>{
+  const dialog=document.getElementById('purchaserDialog');
+  document.getElementById('purchaserName').blur();
+  dialog.close();
 });
 
 document.getElementById('purchaserForm').addEventListener('submit',e=>{
