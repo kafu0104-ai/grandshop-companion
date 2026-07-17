@@ -79,6 +79,19 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 .qty.aggregate input{background:#f4f1f6;color:var(--accent);font-weight:700}
 .qty.aggregate button{visibility:hidden}
 
+
+.share-dialog{width:min(94vw,520px);max-height:92vh}
+.share-preview-wrap{background:#f4f0f6;border:1px solid var(--line);border-radius:14px;padding:10px;max-height:60vh;overflow:auto;text-align:center}
+.share-preview-wrap img{display:block;width:100%;height:auto;border-radius:9px;background:#fff;box-shadow:0 4px 18px rgba(38,28,46,.12)}
+.share-help{font-size:11px;line-height:1.6;color:var(--muted);margin:10px 0 0}
+.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.share-actions button,.share-actions a{display:flex;align-items:center;justify-content:center;min-height:44px;border:0;border-radius:10px;padding:10px;font-weight:700;text-decoration:none;font-size:14px}
+.share-actions .primary{background:var(--accent);color:#fff}
+.share-actions .secondary{background:#fff;color:var(--accent);border:1px solid var(--line)}
+.share-actions .close{grid-column:1/-1;background:#f0edf2;color:var(--ink)}
+.share-actions [hidden]{display:none!important}
+.share-generating{padding:28px 8px;color:var(--muted);font-size:13px}
+
 @media print{
   header,.controls,.bonus,footer{display:none!important}
   body{background:#fff}
@@ -142,7 +155,7 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 
 <footer>
   <button class="secondary" id="copy">代行メモをコピー</button>
-  <button id="print">共有用に印刷</button>
+  <button id="shareImage">共有画像を作る</button>
 </footer>
 
 
@@ -165,6 +178,22 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
     <div id="manageList"></div>
     <div class="dialogactions" style="margin-top:14px">
       <button class="cancel" id="closeManage">閉じる</button>
+    </div>
+  </div>
+</dialog>
+
+
+<dialog id="shareDialog" class="share-dialog">
+  <div class="dialogbox">
+    <h2>共有画像プレビュー</h2>
+    <div id="sharePreviewWrap" class="share-preview-wrap">
+      <div class="share-generating">画像を作成しています…</div>
+    </div>
+    <p id="shareHelp" class="share-help">iPhoneでは「共有する」が使えない場合、画像を長押しして写真に保存できます。</p>
+    <div class="share-actions">
+      <button type="button" id="shareNative" class="primary">共有する</button>
+      <a id="downloadImage" class="secondary" download="grandshop-2026.png">画像を保存</a>
+      <button type="button" id="closeShare" class="close">閉じる</button>
     </div>
   </div>
 </dialog>
@@ -430,7 +459,189 @@ document.getElementById('copy').onclick=async()=>{
   await navigator.clipboard.writeText(lines.join('\n'));
   alert(`${buyerLabel}の買い物メモをコピーしました`);
 };
-document.getElementById('print').onclick=()=>window.print();
+
+let currentShareBlob = null;
+let currentShareUrl = '';
+
+function roundedRect(ctx,x,y,w,h,r){
+  const radius=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+radius,y);
+  ctx.arcTo(x+w,y,x+w,y+h,radius);
+  ctx.arcTo(x+w,y+h,x,y+h,radius);
+  ctx.arcTo(x,y+h,x,y,radius);
+  ctx.arcTo(x,y,x+w,y,radius);
+  ctx.closePath();
+}
+
+function wrapCanvasText(ctx,text,maxWidth){
+  const chars=[...String(text)];
+  const lines=[];
+  let line='';
+  chars.forEach(ch=>{
+    const test=line+ch;
+    if(line && ctx.measureText(test).width>maxWidth){
+      lines.push(line);
+      line=ch;
+    }else line=test;
+  });
+  if(line) lines.push(line);
+  return lines.length?lines:[''];
+}
+
+function makeShareCanvas(){
+  const buyerLabel=isAll()?'全体':(activeBuyer()?.name||'購入者');
+  const selectedProducts=products.filter(p=>getQty(p.id)>0);
+  const b=currentBonus();
+  const itemCount=selectedProducts.reduce((sum,p)=>sum+getQty(p.id),0);
+
+  const W=1080;
+  const pad=72;
+  const contentW=W-pad*2;
+  const lineHeight=38;
+  const itemGap=18;
+
+  // 実際の折り返し行数から必要な高さを計算
+  const measure=document.createElement('canvas').getContext('2d');
+  measure.font='600 28px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  let itemsHeight=selectedProducts.length?0:96;
+  selectedProducts.forEach(p=>{
+    const title=`${p.name}${p.variant?'／'+p.variant:''}`;
+    const lines=wrapCanvasText(measure,title,contentW-220);
+    itemsHeight+=Math.max(78,lines.length*lineHeight+18)+itemGap;
+  });
+  const H=Math.max(1350,420+itemsHeight+430);
+  const canvas=document.createElement('canvas');
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#faf7fb'; ctx.fillRect(0,0,W,H);
+  const grad=ctx.createLinearGradient(0,0,W,260);
+  grad.addColorStop(0,'#7a4fa3'); grad.addColorStop(1,'#ad7fc4');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,270);
+
+  ctx.fillStyle='#fff';
+  ctx.font='700 46px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('GRAND SHOP 2026',pad,102);
+  ctx.font='500 25px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('買い物リスト',pad,148);
+  ctx.font='700 38px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText(buyerLabel,pad,222);
+
+  let y=318;
+  const summaryGap=18;
+  const summaryW=(contentW-summaryGap*2)/3;
+  const summaries=[['商品数',itemCount+'点'],['合計',yen(total())],['特典',bonusTotal()+'枚']];
+  summaries.forEach(([label,value],i)=>{
+    const x=pad+i*(summaryW+summaryGap);
+    ctx.fillStyle='#fff'; roundedRect(ctx,x,y,summaryW,142,24); ctx.fill();
+    ctx.fillStyle='#746c79'; ctx.font='500 22px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+    ctx.fillText(label,x+24,y+42);
+    ctx.fillStyle='#7a4fa3'; ctx.font='700 31px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+    ctx.fillText(value,x+24,y+96);
+  });
+
+  y+=194;
+  ctx.fillStyle='#292433'; ctx.font='700 31px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('選択商品',pad,y);
+  y+=30;
+
+  if(!selectedProducts.length){
+    ctx.fillStyle='#fff'; roundedRect(ctx,pad,y,contentW,96,20); ctx.fill();
+    ctx.fillStyle='#746c79'; ctx.font='500 25px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+    ctx.fillText('選択されている商品はありません',pad+28,y+58);
+    y+=118;
+  }else{
+    selectedProducts.forEach(p=>{
+      const qty=getQty(p.id);
+      const title=`${p.name}${p.variant?'／'+p.variant:''}`;
+      ctx.font='600 28px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+      const lines=wrapCanvasText(ctx,title,contentW-220);
+      const boxH=Math.max(78,lines.length*lineHeight+18);
+      ctx.fillStyle='#fff'; roundedRect(ctx,pad,y,contentW,boxH,18); ctx.fill();
+      ctx.fillStyle='#292433';
+      lines.forEach((line,i)=>ctx.fillText(line,pad+24,y+39+i*lineHeight));
+      ctx.textAlign='right';
+      ctx.fillStyle='#7a4fa3'; ctx.font='700 27px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+      ctx.fillText(`×${qty}`,W-pad-24,y+38);
+      ctx.fillStyle='#292433'; ctx.font='600 23px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+      ctx.fillText(yen(p.price*qty),W-pad-24,y+boxH-16);
+      ctx.textAlign='left';
+      y+=boxH+itemGap;
+    });
+  }
+
+  y+=20;
+  const bonusH=250;
+  ctx.fillStyle='#fff'; roundedRect(ctx,pad,y,contentW,bonusH,24); ctx.fill();
+  ctx.fillStyle='#292433'; ctx.font='700 30px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('特典の希望内訳',pad+28,y+48);
+  const bonusRows=[
+    ['YUKATA-MODE Ver.',b.yukata||0],
+    ['Mystical／シャイニング',b.shining||0],
+    ['Mystical／レイジング',b.raging||0]
+  ];
+  bonusRows.forEach(([label,value],i)=>{
+    const ry=y+96+i*46;
+    ctx.fillStyle='#746c79'; ctx.font='500 24px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+    ctx.fillText(label,pad+28,ry);
+    ctx.textAlign='right'; ctx.fillStyle='#7a4fa3'; ctx.font='700 25px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+    ctx.fillText(`${value}枚`,W-pad-28,ry); ctx.textAlign='left';
+  });
+
+  ctx.fillStyle='#746c79'; ctx.font='500 20px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.textAlign='center'; ctx.fillText('GRAND SHOP 2026 代行メモ',W/2,H-48); ctx.textAlign='left';
+  return canvas;
+}
+
+async function buildShareImage(){
+  const dialog=document.getElementById('shareDialog');
+  const wrap=document.getElementById('sharePreviewWrap');
+  wrap.innerHTML='<div class="share-generating">画像を作成しています…</div>';
+  dialog.showModal();
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+
+  try{
+    const canvas=makeShareCanvas();
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('画像の作成に失敗しました')),'image/png'));
+    if(currentShareUrl) URL.revokeObjectURL(currentShareUrl);
+    currentShareBlob=blob;
+    currentShareUrl=URL.createObjectURL(blob);
+
+    const img=new Image();
+    img.src=currentShareUrl;
+    img.alt='共有用の買い物リスト画像';
+    wrap.replaceChildren(img);
+
+    const buyerLabel=isAll()?'全体':(activeBuyer()?.name||'購入者');
+    const safeName=buyerLabel.replace(/[\\/:*?"<>|]/g,'_');
+    const download=document.getElementById('downloadImage');
+    download.href=currentShareUrl;
+    download.download=`grandshop-2026-${safeName}.png`;
+
+    const shareBtn=document.getElementById('shareNative');
+    const file=new File([blob],download.download,{type:'image/png'});
+    const canShare=!!(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]})));
+    shareBtn.hidden=!canShare;
+    shareBtn.onclick=async()=>{
+      try{
+        await navigator.share({title:'GRAND SHOP 2026 買い物リスト',files:[file]});
+      }catch(e){
+        if(e?.name!=='AbortError') alert('共有できませんでした。画像を長押しするか「画像を保存」を使ってください。');
+      }
+    };
+  }catch(e){
+    console.error(e);
+    wrap.innerHTML='<div class="share-generating">画像を作成できませんでした。ページを再読み込みして、もう一度お試しください。</div>';
+    document.getElementById('shareNative').hidden=true;
+    document.getElementById('downloadImage').removeAttribute('href');
+  }
+}
+
+document.getElementById('shareImage').onclick=buildShareImage;
+document.getElementById('closeShare').onclick=()=>document.getElementById('shareDialog').close();
+document.getElementById('shareDialog').addEventListener('close',()=>{});
+
 
 setupFilters();
 syncBonusInputs();
