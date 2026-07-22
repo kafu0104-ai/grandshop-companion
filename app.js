@@ -97,6 +97,8 @@ const activeFilters = {
   selected: ''
 };
 
+const LINKED_CHARACTER_FILTERS = new Map();
+
 function filterValueMatchesProduct(filterValue,p){
   const [type,...rest]=filterValue.split(':');
   const value=rest.join(':');
@@ -105,6 +107,28 @@ function filterValueMatchesProduct(filterValue,p){
     : type==='affiliation' ? p.affiliation===value
     : type==='variant' ? p.variant===value
     : true;
+}
+
+function linkCharacterFilters(firstValue,secondValue){
+  if(!firstValue || !secondValue) return;
+  LINKED_CHARACTER_FILTERS.set(firstValue,secondValue);
+  LINKED_CHARACTER_FILTERS.set(secondValue,firstValue);
+}
+
+function syncLinkedCharacterCheckbox(source){
+  const linkedValue=LINKED_CHARACTER_FILTERS.get(source.value);
+  if(!linkedValue) return;
+  const linked=document.querySelector(
+    `input[name="filterCharacter"][value="${CSS.escape(linkedValue)}"]`
+  );
+  if(linked) linked.checked=source.checked;
+}
+
+function characterCheckCard(value,label,note='',linked=false){
+  return `<label class="check-card${linked?' linked':''}">
+    <input type="checkbox" name="filterCharacter" value="${value}">
+    <span>${label}${note?`<small>${note}</small>`:''}</span>
+  </label>`;
 }
 
 function formatMonth(month){
@@ -135,51 +159,136 @@ function setupFilters() {
     '<option value="affiliation:prince-cat">PRINCE CAT</option>' +
     '<option value="affiliation:mascot">マスコットキャラクター</option>';
 
-  const characterGroups=PRODUCT_MASTER.units.map(unit=>{
-    const checks=unit.characters.map(character=>`
-      <label class="check-card">
-        <input type="checkbox" name="filterCharacter" value="character:${character.id}">
-        <span>${character.name}</span>
-      </label>
-    `).join('');
-    return `<div class="filter-group-title">${unit.name}</div><div class="check-grid characters">${checks}</div>`;
+  LINKED_CHARACTER_FILTERS.clear();
+
+  const catsByCharacterName=new Map();
+  PRODUCT_MASTER.princeCats.forEach(cat=>{
+    const info=MASTER_INDEX.princeCats.get(cat.id);
+    const ownerName=normalizeMasterName(info?.character || '');
+    if(ownerName) catsByCharacterName.set(ownerName,cat);
+  });
+
+  const groupHtml=PRODUCT_MASTER.units.map((unit,unitIndex)=>{
+    const characterCards=[];
+    const princeCatCards=[];
+
+    unit.characters.forEach(character=>{
+      const characterValue=`character:${character.id}`;
+      characterCards.push(characterCheckCard(characterValue,character.name));
+
+      const possibleNames=[
+        character.name,
+        character.shortName,
+        ...(character.aliases || [])
+      ].map(normalizeMasterName).filter(Boolean);
+
+      const linkedCat=possibleNames
+        .map(name=>catsByCharacterName.get(name))
+        .find(Boolean);
+
+      if(linkedCat){
+        const catValue=`princeCat:${linkedCat.id}`;
+        linkCharacterFilters(characterValue,catValue);
+        princeCatCards.push(
+          characterCheckCard(
+            catValue,
+            linkedCat.name,
+            `${character.name}と連動`,
+            true
+          )
+        );
+      }
+    });
+
+    const summerVariant =
+      unit.name==='ST☆RISH' ? '夏の星'
+      : (unit.name==='QUARTET NIGHT' || unit.name.includes('カルテット')) ? '夏の夜'
+      : '';
+
+    const summerCard=summerVariant && products.some(p=>p.variant===summerVariant)
+      ? characterCheckCard(`variant:${summerVariant}`,summerVariant,'浴衣・お茶碗')
+      : '';
+
+    return `<details class="character-group"${unitIndex===0?' open':''}>
+      <summary>${unit.name}</summary>
+      <div class="character-group-body">
+        <div class="character-subtitle">キャラクター</div>
+        <div class="check-grid characters">${characterCards.join('')}</div>
+        ${summerCard ? `
+          <div class="character-subtitle">シリーズ</div>
+          <div class="check-grid characters">${summerCard}</div>
+        ` : ''}
+        ${princeCatCards.length ? `
+          <div class="character-subtitle">PRINCE CAT</div>
+          <div class="check-grid characters">${princeCatCards.join('')}</div>
+        ` : ''}
+      </div>
+    </details>`;
   }).join('');
 
-  const catChecks=PRODUCT_MASTER.princeCats.map(cat=>{
-    const info=MASTER_INDEX.princeCats.get(cat.id);
-    return `<label class="check-card">
-      <input type="checkbox" name="filterCharacter" value="princeCat:${cat.id}">
-      <span>${cat.name}${info?.character?`（${info.character}）`:''}</span>
-    </label>`;
-  }).join('');
+  const linkedCatIds=new Set(
+    [...LINKED_CHARACTER_FILTERS.keys()]
+      .filter(value=>value.startsWith('princeCat:'))
+      .map(value=>value.slice('princeCat:'.length))
+  );
+
+  const unlinkedCats=PRODUCT_MASTER.princeCats
+    .filter(cat=>!linkedCatIds.has(cat.id))
+    .map(cat=>characterCheckCard(`princeCat:${cat.id}`,cat.name))
+    .join('');
+
+  const mascotCards=PRODUCT_MASTER.mascots.map(mascot=>
+    characterCheckCard(`variant:${mascot.name}`,mascot.name)
+  ).join('');
 
   const reserved = new Set([
-    ...PRODUCT_MASTER.units.flatMap(unit => unit.characters.flatMap(character => [character.name, character.shortName, ...(character.aliases || [])].map(normalizeMasterName))),
+    ...PRODUCT_MASTER.units.flatMap(unit => unit.characters.flatMap(character =>
+      [character.name, character.shortName, ...(character.aliases || [])].map(normalizeMasterName)
+    )),
     ...PRODUCT_MASTER.princeCats.map(cat => normalizeMasterName(cat.name)),
-    ...PRODUCT_MASTER.mascots.flatMap(mascot => [mascot.name, ...(mascot.aliases || [])].map(normalizeMasterName))
+    ...PRODUCT_MASTER.mascots.flatMap(mascot =>
+      [mascot.name, ...(mascot.aliases || [])].map(normalizeMasterName)
+    ),
+    normalizeMasterName('夏の星'),
+    normalizeMasterName('夏の夜')
   ]);
+
   const otherVariants = [...new Set(products.map(p=>p.variant).filter(Boolean))]
     .filter(value => !reserved.has(normalizeMasterName(value)))
     .sort((a,b)=>a.localeCompare(b,'ja'));
 
-  const otherChecks=otherVariants.map(value=>`
-    <label class="check-card">
-      <input type="checkbox" name="filterCharacter" value="variant:${value}">
-      <span>${value}</span>
-    </label>
-  `).join('');
+  const otherChecks=otherVariants
+    .map(value=>characterCheckCard(`variant:${value}`,value))
+    .join('');
 
   document.getElementById('characterChecks').innerHTML =
-    characterGroups +
-    `<div class="filter-group-title">PRINCE CAT</div><div class="check-grid characters">${catChecks}</div>` +
-    `<div class="filter-group-title">マスコットキャラクター</div>
-     <div class="check-grid characters">
-       <label class="check-card">
-         <input type="checkbox" name="filterCharacter" value="affiliation:mascot">
-         <span>マスコットキャラクター</span>
-       </label>
-     </div>` +
-    (otherChecks ? `<div class="filter-group-title">その他・種類</div><div class="check-grid characters">${otherChecks}</div>` : '');
+    groupHtml +
+    (unlinkedCats ? `<details class="character-group">
+      <summary>PRINCE CAT</summary>
+      <div class="character-group-body">
+        <div class="check-grid characters">${unlinkedCats}</div>
+      </div>
+    </details>` : '') +
+    `<details class="character-group">
+      <summary>マスコットキャラクター</summary>
+      <div class="character-group-body">
+        <div class="check-grid characters">
+          ${mascotCards || characterCheckCard('affiliation:mascot','マスコットキャラクター')}
+        </div>
+      </div>
+    </details>` +
+    (otherChecks ? `<details class="character-group">
+      <summary>その他・種類</summary>
+      <div class="character-group-body">
+        <div class="check-grid characters">${otherChecks}</div>
+      </div>
+    </details>` : '');
+
+  document.querySelectorAll('input[name="filterCharacter"]').forEach(input=>{
+    input.addEventListener('change',()=>{
+      syncLinkedCharacterCheckbox(input);
+    });
+  });
 
   syncFilterForm();
   updateFilterButton();
@@ -191,6 +300,9 @@ function syncFilterForm(){
   });
   document.querySelectorAll('input[name="filterCharacter"]').forEach(input=>{
     input.checked=activeFilters.characters.includes(input.value);
+  });
+  document.querySelectorAll('input[name="filterCharacter"]:checked').forEach(input=>{
+    syncLinkedCharacterCheckbox(input);
   });
   document.getElementById('unit').value=activeFilters.unit;
   document.getElementById('category').value=activeFilters.category;
@@ -289,7 +401,8 @@ function render() {
         : type==='affiliation' ? p.affiliation===value
         : true;
     }
-    const characterHit=!characterFilters.length
+    const characterHit=p.random
+      || !characterFilters.length
       || characterFilters.some(filterValue=>filterValueMatchesProduct(filterValue,p));
     const categoryHit=!category || (category==='__random__' ? p.random : (!p.random && p.category===category));
     const selectedHit = !selected
