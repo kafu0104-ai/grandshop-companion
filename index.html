@@ -32,7 +32,20 @@ h1{font-size:18px;margin:0;min-width:0}
 .summary small{display:block;font-size:10px;color:var(--muted)}
 .summary b{display:block;margin-top:2px;font-size:16px;color:var(--accent)}
 .controls{padding:10px 12px;display:grid;gap:8px}
-.controls input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.controls input,.quick-filters select{
+  width:100%;
+  min-height:42px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  font-size:16px;
+}
+.quick-filters{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
 .bonus{margin:0 12px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
 .bonus h2{font-size:15px;margin:0 0 8px}
 .bonusgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -466,6 +479,20 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 
 <section class="controls">
   <input id="search" placeholder="商品名・キャラクター名を検索">
+  <div class="quick-filters">
+    <select id="category" aria-label="カテゴリで絞り込み">
+      <option value="">全カテゴリ</option>
+    </select>
+    <select id="selected" aria-label="商品の状態で絞り込み">
+      <option value="">全商品</option>
+      <option value="selected">数量入力済み</option>
+      <option value="unselected">未入力</option>
+      <option value="unpurchased">未購入のみ</option>
+      <option value="purchased">購入済みのみ</option>
+      <option value="available">販売中のみ</option>
+      <option value="soldout">売り切れのみ</option>
+    </select>
+  </div>
 </section>
 
 
@@ -495,32 +522,14 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
       <div id="characterChecks"></div>
     </section>
 
-    <section class="filter-section">
-      <h3>カテゴリ</h3>
-      <select id="category" class="filter-select">
-        <option value="">全カテゴリ</option>
-      </select>
-    </section>
 
-    <section class="filter-section">
-      <h3>商品の状態</h3>
-      <select id="selected" class="filter-select">
-        <option value="">全商品</option>
-        <option value="selected">数量入力済み</option>
-        <option value="unselected">未入力</option>
-        <option value="unpurchased">未購入のみ</option>
-        <option value="purchased">購入済みのみ</option>
-        <option value="available">販売中のみ</option>
-        <option value="soldout">売り切れのみ</option>
-      </select>
-    </section>
 
     <section class="filter-section">
       <details class="data-management">
-        <summary>データ管理</summary>
+        <summary>リセット</summary>
         <div class="data-management-body">
           <p class="data-management-note">
-            リセットしたデータは元に戻せません。必要な項目だけ実行してください。
+            数量・売切れ・購入済みのリセットは元に戻せません。
           </p>
           <div class="data-reset-buttons">
             <button type="button" id="resetQty">数量をリセット</button>
@@ -533,7 +542,7 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
   </div>
 
   <div class="filter-actions">
-    <button type="button" id="resetFilters" class="filter-reset">条件をクリア</button>
+    <button type="button" id="resetFilters" class="filter-reset">絞り込みをリセット</button>
     <button type="button" id="applyFilters" class="filter-apply">この条件で表示</button>
   </div>
 </section>

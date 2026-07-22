@@ -353,7 +353,9 @@ function applyFilterForm(){
 }
 
 function resetFilterForm(){
-  document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>{input.checked=false;});
+  document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>{
+    input.checked=false;
+  });
   document.getElementById('unit').value='';
   document.getElementById('category').value='';
   document.getElementById('selected').value='';
@@ -552,6 +554,16 @@ function changeBonus(key,d){
 }
 
 document.getElementById('search').addEventListener('input',render);
+document.getElementById('category').addEventListener('change',event=>{
+  activeFilters.category=event.target.value;
+  updateFilterButton();
+  render();
+});
+document.getElementById('selected').addEventListener('change',event=>{
+  activeFilters.selected=event.target.value;
+  updateFilterButton();
+  render();
+});
 document.getElementById('openFilters').onclick=openFilterOverlay;
 document.getElementById('closeFilters').onclick=closeFilterOverlay;
 document.getElementById('applyFilters').onclick=applyFilterForm;
