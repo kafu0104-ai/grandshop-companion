@@ -65,7 +65,10 @@ function getSoldOut(id){
   return !!app.soldOut[id];
 }
 function total(purchaserId=app.activePurchaserId){
-  return products.reduce((s,p)=>s+getQty(p.id,purchaserId)*p.price,0);
+  return products.reduce((sum,p)=>{
+    if(getSoldOut(p.id)) return sum;
+    return sum + getQty(p.id,purchaserId) * p.price;
+  },0);
 }
 function bonusTotal(purchaserId=app.activePurchaserId){
   return Math.floor(total(purchaserId)/3000);
@@ -207,10 +210,10 @@ function render() {
     const purchaseControl = isAll()
       ? ''
       : `<button type="button" class="purchase-check ${purchased?'checked':''}" onclick="togglePurchased('${p.id}')">
-          ${purchased?'購入済み':'未購入'}
+          ${purchased?'購入済み':'購入確認'}
         </button>`;
     const soldOutControl = `<button type="button" class="soldout-check ${soldOut?'checked':''}" onclick="toggleSoldOut('${p.id}')">
-      ${soldOut?'売り切れ':'販売中'}
+      売切れ
     </button>`;
     return `<article class="item ${n>0?'active':''} ${purchased?'purchased':''} ${soldOut?'soldout':''}">
       <div class="thumb"><img loading="lazy" src="${p.image}" alt=""></div>
