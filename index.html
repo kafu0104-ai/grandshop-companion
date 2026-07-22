@@ -22,10 +22,16 @@ h1{font-size:18px;margin:0 0 10px}
 .filters{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
 .bonus{margin:0 12px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
 .bonus h2{font-size:15px;margin:0 0 8px}
-.bonusgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
-.bonusgrid label{font-size:10px;color:var(--muted)}
-.bonusgrid input{width:100%;margin-top:4px;padding:8px;border:1px solid var(--line);border-radius:9px;text-align:center}
+.bonusgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bonus-item{min-width:0}
+.bonus-item>span{display:block;min-height:28px;font-size:10px;line-height:1.35;color:var(--muted)}
+.bonus-step{display:grid;grid-template-columns:42px minmax(48px,1fr) 42px;gap:6px;align-items:center;margin-top:5px}
+.bonus-step button{display:flex;align-items:center;justify-content:center;min-width:42px;height:42px;border:0;border-radius:10px;background:var(--accent);color:#fff;font-size:22px;font-weight:800;line-height:1}
+.bonus-step button:disabled{opacity:.35}
+.bonus-step input{width:100%;min-width:0;height:42px;padding:7px 2px;border:1px solid var(--line);border-radius:9px;text-align:center;font-size:16px;font-weight:800;color:var(--ink);background:#fff}
+.bonus-step input:disabled{background:#f4f1f6;color:var(--accent);opacity:1}
 .bonuscheck{margin-top:8px;padding:8px;border-radius:9px;background:var(--soft);font-size:12px}
+.bonusextra{margin-top:7px;padding:9px;border-radius:9px;background:#fff4d8;color:#8a5b00;font-size:12px;font-weight:700}
 .list{display:grid;gap:8px;padding:0 10px 130px}
 .item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px;display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center}
 .item.active{outline:2px solid #c9b4dd;background:#fefcff}
@@ -138,9 +144,13 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);b
 footer button{flex:1;border:0;border-radius:10px;padding:10px;background:var(--accent);color:#fff;font-weight:700}
 footer button.secondary{background:#fff;color:var(--accent);border:1px solid var(--line)}
 @media(max-width:560px){
+  input,select,textarea{font-size:16px}
   .filters{grid-template-columns:1fr 1fr}
   .filters select:last-child{grid-column:auto}
   .bonusgrid{grid-template-columns:1fr}
+  .bonus-item{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center}
+  .bonus-item>span{min-height:0;font-size:11px}
+  .bonus-step{margin-top:0}
   .item{grid-template-columns:64px 1fr}
   .thumb{width:64px;height:64px}
   .qty{grid-column:2;justify-self:end}
@@ -296,17 +306,33 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 <section class="bonus">
   <h2>特典の希望内訳</h2>
   <div class="bonusgrid">
-    <label>YUKATA-MODE Ver.
-      <input id="yukata" type="number" min="0" value="0">
-    </label>
-    <label>Mystical／シャイニング
-      <input id="mysticalShining" type="number" min="0" value="0">
-    </label>
-    <label>Mystical／レイジング
-      <input id="mysticalRaging" type="number" min="0" value="0">
-    </label>
+    <div class="bonus-item">
+      <span>YUKATA-MODE Ver.</span>
+      <div class="bonus-step">
+        <button type="button" aria-label="YUKATAを1枚減らす" onclick="changeBonus('yukata',-1)">−</button>
+        <input id="yukata" type="number" inputmode="numeric" min="0" value="0" aria-label="YUKATAの枚数">
+        <button type="button" aria-label="YUKATAを1枚増やす" onclick="changeBonus('yukata',1)">＋</button>
+      </div>
+    </div>
+    <div class="bonus-item">
+      <span>Mystical／シャイニング</span>
+      <div class="bonus-step">
+        <button type="button" aria-label="シャイニングを1枚減らす" onclick="changeBonus('shining',-1)">−</button>
+        <input id="mysticalShining" type="number" inputmode="numeric" min="0" value="0" aria-label="シャイニングの枚数">
+        <button type="button" aria-label="シャイニングを1枚増やす" onclick="changeBonus('shining',1)">＋</button>
+      </div>
+    </div>
+    <div class="bonus-item">
+      <span>Mystical／レイジング</span>
+      <div class="bonus-step">
+        <button type="button" aria-label="レイジングを1枚減らす" onclick="changeBonus('raging',-1)">−</button>
+        <input id="mysticalRaging" type="number" inputmode="numeric" min="0" value="0" aria-label="レイジングの枚数">
+        <button type="button" aria-label="レイジングを1枚増やす" onclick="changeBonus('raging',1)">＋</button>
+      </div>
+    </div>
   </div>
-  <div id="bonusCheck" class="bonuscheck">特典0枚／配分0枚</div>
+  <div id="bonusCheck" class="bonuscheck">特典0枚／振り分け0枚</div>
+  <div id="bonusExtra" class="bonusextra" hidden></div>
 </section>
 
 <section class="reset-panel">

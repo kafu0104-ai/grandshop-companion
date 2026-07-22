@@ -71,12 +71,12 @@ function total(purchaserId=app.activePurchaserId){
   },0);
 }
 function bonusTotal(purchaserId=app.activePurchaserId){
-  if(purchaserId === 'all'){
-    return app.purchasers.reduce((sum,p)=>{
-      return sum + Math.floor(total(p.id)/3000);
-    },0);
-  }
   return Math.floor(total(purchaserId)/3000);
+}
+function individualBonusTotal(){
+  return app.purchasers.reduce((sum,p)=>{
+    return sum + Math.floor(total(p.id)/3000);
+  },0);
 }
 function combinedBonus(){
   return app.purchasers.reduce((acc,p)=>{
@@ -250,6 +250,9 @@ function render() {
   ['yukata','mysticalShining','mysticalRaging'].forEach(id=>{
     document.getElementById(id).disabled=isAll();
   });
+  document.querySelectorAll('.bonus-step button').forEach(button=>{
+    button.disabled=isAll();
+  });
   updateBonus();
 }
 
@@ -289,21 +292,47 @@ function syncBonusInputs(){
   document.getElementById('mysticalRaging').value=b.raging||0;
 }
 function updateBonus() {
-  const bt=bonusTotal();
+  const overall=bonusTotal();
+  const personal=isAll() ? individualBonusTotal() : overall;
   const b=currentBonus();
   const allocated=(b.yukata||0)+(b.shining||0)+(b.raging||0);
-  const diff=bt-allocated;
+  const diff=personal-allocated;
   const el=document.getElementById('bonusCheck');
+  const extraEl=document.getElementById('bonusExtra');
+
   if(diff===0) {
-    el.textContent=`特典${bt}枚／配分${allocated}枚　✓ 一致`;
+    el.textContent=`特典${personal}枚／振り分け${allocated}枚　✓ 一致`;
     el.style.color='';
   } else if(diff>0) {
-    el.textContent=`特典${bt}枚／配分${allocated}枚　あと${diff}枚未配分`;
+    el.textContent=`特典${personal}枚／振り分け${allocated}枚　あと${diff}枚未振り分け`;
     el.style.color='#b36b00';
   } else {
-    el.textContent=`特典${bt}枚／配分${allocated}枚　${Math.abs(diff)}枚オーバー`;
+    el.textContent=`特典${personal}枚／振り分け${allocated}枚　${Math.abs(diff)}枚オーバー`;
     el.style.color='var(--danger)';
   }
+
+  if(isAll()){
+    const extra=overall-personal;
+    if(extra>0){
+      extraEl.textContent=`🎁 合計金額では、さらに${extra}枚もらえます`;
+      extraEl.hidden=false;
+    }else{
+      extraEl.hidden=true;
+      extraEl.textContent='';
+    }
+  }else{
+    extraEl.hidden=true;
+    extraEl.textContent='';
+  }
+}
+
+function changeBonus(key,d){
+  if(isAll()) return;
+  const b=buyerBonus(app.activePurchaserId);
+  b[key]=Math.max(0,Number(b[key]||0)+d);
+  saveApp();
+  syncBonusInputs();
+  updateBonus();
 }
 
 ['search'].forEach(id=>document.getElementById(id).addEventListener('input',render));
@@ -318,7 +347,12 @@ function updateBonus() {
   el.addEventListener('input',()=>{
     if(isAll()) return;
     buyerBonus(app.activePurchaserId)[key]=Math.max(0,Number(el.value)||0);
-    saveApp(); updateBonus();
+    saveApp();
+    updateBonus();
+  });
+  el.addEventListener('change',()=>{
+    if(isAll()) return;
+    el.value=Math.max(0,Number(el.value)||0);
   });
 });
 
