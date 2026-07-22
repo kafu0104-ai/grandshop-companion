@@ -229,7 +229,10 @@ function render() {
     </article>`;
   }).join('');
 
-  const selectedCount=products.reduce((s,p)=>s+getQty(p.id),0);
+  const selectedCount=products.reduce((sum,p)=>{
+    if(getSoldOut(p.id)) return sum;
+    return sum + getQty(p.id);
+  },0);
   document.getElementById('count').textContent=selectedCount+'点';
   document.getElementById('total').textContent=yen(total());
   document.getElementById('bonusTotal').textContent=bonusTotal()+'枚';
