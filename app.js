@@ -71,6 +71,11 @@ function total(purchaserId=app.activePurchaserId){
   },0);
 }
 function bonusTotal(purchaserId=app.activePurchaserId){
+  if(purchaserId === 'all'){
+    return app.purchasers.reduce((sum,p)=>{
+      return sum + Math.floor(total(p.id)/3000);
+    },0);
+  }
   return Math.floor(total(purchaserId)/3000);
 }
 function combinedBonus(){
