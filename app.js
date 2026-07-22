@@ -88,9 +88,39 @@ function combinedBonus(){
   }, {yukata:0,shining:0,raging:0});
 }
 
+
+const activeFilters = {
+  months: [],
+  characters: [],
+  unit: '',
+  category: '',
+  selected: ''
+};
+
+function filterValueMatchesProduct(filterValue,p){
+  const [type,...rest]=filterValue.split(':');
+  const value=rest.join(':');
+  return type==='character' ? p.characterId===value
+    : type==='princeCat' ? p.princeCatId===value
+    : type==='affiliation' ? p.affiliation===value
+    : type==='variant' ? p.variant===value
+    : true;
+}
+
+function formatMonth(month){
+  const parts=String(month).split('-');
+  const numeric=Number(parts[parts.length-1]);
+  return Number.isFinite(numeric) && numeric>0 ? `${numeric}月` : month;
+}
+
 function setupFilters() {
   const months=[...new Set(products.map(p=>p.releaseMonth).filter(Boolean))].sort();
-  document.getElementById('month').innerHTML='<option value="">全年月</option>'+months.map(x=>`<option value="${x}">${x.replace('-', '年')}月</option>`).join('');
+  document.getElementById('monthChecks').innerHTML=months.map(month=>`
+    <label class="check-card">
+      <input type="checkbox" name="filterMonth" value="${month}">
+      <span>${formatMonth(month)}</span>
+    </label>
+  `).join('');
 
   const categories=[...new Set(products.map(p=>p.category).filter(Boolean))]
     .sort((a,b)=>a.localeCompare(b,'ja'));
@@ -105,16 +135,22 @@ function setupFilters() {
     '<option value="affiliation:prince-cat">PRINCE CAT</option>' +
     '<option value="affiliation:mascot">マスコットキャラクター</option>';
 
-  const unitGroups = PRODUCT_MASTER.units.map(unit => {
-    const options = unit.characters.map(character =>
-      `<option value="character:${character.id}">${character.name}</option>`
-    ).join('');
-    return `<optgroup label="${unit.name}">${options}</optgroup>`;
+  const characterGroups=PRODUCT_MASTER.units.map(unit=>{
+    const checks=unit.characters.map(character=>`
+      <label class="check-card">
+        <input type="checkbox" name="filterCharacter" value="character:${character.id}">
+        <span>${character.name}</span>
+      </label>
+    `).join('');
+    return `<div class="filter-group-title">${unit.name}</div><div class="check-grid characters">${checks}</div>`;
   }).join('');
 
-  const catOptions = PRODUCT_MASTER.princeCats.map(cat => {
-    const info = MASTER_INDEX.princeCats.get(cat.id);
-    return `<option value="princeCat:${cat.id}">${cat.name}（${info.character}）</option>`;
+  const catChecks=PRODUCT_MASTER.princeCats.map(cat=>{
+    const info=MASTER_INDEX.princeCats.get(cat.id);
+    return `<label class="check-card">
+      <input type="checkbox" name="filterCharacter" value="princeCat:${cat.id}">
+      <span>${cat.name}${info?.character?`（${info.character}）`:''}</span>
+    </label>`;
   }).join('');
 
   const reserved = new Set([
@@ -125,16 +161,90 @@ function setupFilters() {
   const otherVariants = [...new Set(products.map(p=>p.variant).filter(Boolean))]
     .filter(value => !reserved.has(normalizeMasterName(value)))
     .sort((a,b)=>a.localeCompare(b,'ja'));
-  const otherOptions = otherVariants.map(value =>
-    `<option value="variant:${value}">${value}</option>`
-  ).join('');
 
-  document.getElementById('character').innerHTML =
-    '<option value="">全キャラクター・種類</option>' +
-    unitGroups +
-    `<optgroup label="PRINCE CAT">${catOptions}</optgroup>` +
-    '<optgroup label="マスコットキャラクター"><option value="affiliation:mascot">マスコットキャラクター</option></optgroup>' +
-    `<optgroup label="その他・種類">${otherOptions}</optgroup>`;
+  const otherChecks=otherVariants.map(value=>`
+    <label class="check-card">
+      <input type="checkbox" name="filterCharacter" value="variant:${value}">
+      <span>${value}</span>
+    </label>
+  `).join('');
+
+  document.getElementById('characterChecks').innerHTML =
+    characterGroups +
+    `<div class="filter-group-title">PRINCE CAT</div><div class="check-grid characters">${catChecks}</div>` +
+    `<div class="filter-group-title">マスコットキャラクター</div>
+     <div class="check-grid characters">
+       <label class="check-card">
+         <input type="checkbox" name="filterCharacter" value="affiliation:mascot">
+         <span>マスコットキャラクター</span>
+       </label>
+     </div>` +
+    (otherChecks ? `<div class="filter-group-title">その他・種類</div><div class="check-grid characters">${otherChecks}</div>` : '');
+
+  syncFilterForm();
+  updateFilterButton();
+}
+
+function syncFilterForm(){
+  document.querySelectorAll('input[name="filterMonth"]').forEach(input=>{
+    input.checked=activeFilters.months.includes(input.value);
+  });
+  document.querySelectorAll('input[name="filterCharacter"]').forEach(input=>{
+    input.checked=activeFilters.characters.includes(input.value);
+  });
+  document.getElementById('unit').value=activeFilters.unit;
+  document.getElementById('category').value=activeFilters.category;
+  document.getElementById('selected').value=activeFilters.selected;
+}
+
+function getFilterCount(){
+  return activeFilters.months.length
+    + activeFilters.characters.length
+    + Number(Boolean(activeFilters.unit))
+    + Number(Boolean(activeFilters.category))
+    + Number(Boolean(activeFilters.selected));
+}
+
+function updateFilterButton(){
+  const count=getFilterCount();
+  const button=document.getElementById('openFilters');
+  const countEl=document.getElementById('filterCount');
+  countEl.textContent=count ? `（${count}）` : '';
+  button.classList.toggle('active',count>0);
+}
+
+function openFilterOverlay(){
+  syncFilterForm();
+  const overlay=document.getElementById('filterOverlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden','false');
+  document.body.classList.add('filter-opened');
+}
+
+function closeFilterOverlay(){
+  const overlay=document.getElementById('filterOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden','true');
+  document.body.classList.remove('filter-opened');
+  closeDataManagement();
+}
+
+function applyFilterForm(){
+  activeFilters.months=[...document.querySelectorAll('input[name="filterMonth"]:checked')].map(input=>input.value);
+  activeFilters.characters=[...document.querySelectorAll('input[name="filterCharacter"]:checked')].map(input=>input.value);
+  activeFilters.unit=document.getElementById('unit').value;
+  activeFilters.category=document.getElementById('category').value;
+  activeFilters.selected=document.getElementById('selected').value;
+  updateFilterButton();
+  closeFilterOverlay();
+  render();
+}
+
+function resetFilterForm(){
+  document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>{input.checked=false;});
+  document.getElementById('unit').value='';
+  document.getElementById('category').value='';
+  document.getElementById('selected').value='';
 }
 
 function renderTabs(){
@@ -161,11 +271,11 @@ function renderTabs(){
 function render() {
   renderTabs();
   const q=document.getElementById('search').value.toLowerCase();
-  const month=document.getElementById('month').value;
-  const unitFilter=document.getElementById('unit').value;
-  const characterFilter=document.getElementById('character').value;
-  const category=document.getElementById('category').value;
-  const selected=document.getElementById('selected').value;
+  const months=activeFilters.months;
+  const unitFilter=activeFilters.unit;
+  const characterFilters=activeFilters.characters;
+  const category=activeFilters.category;
+  const selected=activeFilters.selected;
 
   const visible=products.filter(p=>{
     const n=getQty(p.id);
@@ -179,16 +289,8 @@ function render() {
         : type==='affiliation' ? p.affiliation===value
         : true;
     }
-    let characterHit=true;
-    if (characterFilter) {
-      const [type, ...rest] = characterFilter.split(':');
-      const value = rest.join(':');
-      characterHit = type==='character' ? p.characterId===value
-        : type==='princeCat' ? p.princeCatId===value
-        : type==='affiliation' ? p.affiliation===value
-        : type==='variant' ? p.variant===value
-        : true;
-    }
+    const characterHit=!characterFilters.length
+      || characterFilters.some(filterValue=>filterValueMatchesProduct(filterValue,p));
     const categoryHit=!category || (category==='__random__' ? p.random : (!p.random && p.category===category));
     const selectedHit = !selected
       || (selected==='selected' && n>0)
@@ -197,7 +299,8 @@ function render() {
       || (selected==='purchased' && purchased)
       || (selected==='available' && !soldOut)
       || (selected==='soldout' && soldOut);
-    return hit && (!month||p.releaseMonth===month) && unitHit && characterHit && categoryHit && selectedHit;
+    const monthHit=!months.length || months.includes(p.releaseMonth);
+    return hit && monthHit && unitHit && characterHit && categoryHit && selectedHit;
   });
 
   document.getElementById('list').innerHTML=visible.map(p=>{
@@ -335,8 +438,16 @@ function changeBonus(key,d){
   updateBonus();
 }
 
-['search'].forEach(id=>document.getElementById(id).addEventListener('input',render));
-['month','unit','character','category','selected'].forEach(id=>document.getElementById(id).addEventListener('change',render));
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('openFilters').onclick=openFilterOverlay;
+document.getElementById('closeFilters').onclick=closeFilterOverlay;
+document.getElementById('applyFilters').onclick=applyFilterForm;
+document.getElementById('resetFilters').onclick=resetFilterForm;
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape' && document.getElementById('filterOverlay').classList.contains('open')){
+    closeFilterOverlay();
+  }
+});
 
 [
   ['yukata','yukata'],
@@ -440,9 +551,23 @@ function resetPurchased(){
   render();
 }
 
-document.getElementById('resetQty').onclick=resetQuantities;
-document.getElementById('resetSoldOut').onclick=resetSoldOut;
-document.getElementById('resetPurchased').onclick=resetPurchased;
+function closeDataManagement(){
+  const panel=document.querySelector('.data-management');
+  if(panel) panel.open=false;
+}
+
+document.getElementById('resetQty').onclick=()=>{
+  resetQuantities();
+  closeDataManagement();
+};
+document.getElementById('resetSoldOut').onclick=()=>{
+  resetSoldOut();
+  closeDataManagement();
+};
+document.getElementById('resetPurchased').onclick=()=>{
+  resetPurchased();
+  closeDataManagement();
+};
 
 const toTopButton=document.getElementById('toTop');
 function updateToTopButton(){

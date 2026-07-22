@@ -12,14 +12,27 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:var(--bg);color:var(--ink)}
 header{position:sticky;top:0;z-index:20;background:rgba(250,247,251,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px}
-h1{font-size:18px;margin:0 0 10px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+h1{font-size:18px;margin:0;min-width:0}
+.filter-open{
+  margin-left:auto;
+  min-height:36px;
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--accent);
+  font-weight:800;
+  white-space:nowrap;
+}
+.filter-open.active{background:var(--soft);border-color:#c9b4dd}
+.filter-open small{margin-left:3px;font-size:10px}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .summary div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
 .summary small{display:block;font-size:10px;color:var(--muted)}
 .summary b{display:block;margin-top:2px;font-size:16px;color:var(--accent)}
 .controls{padding:10px 12px;display:grid;gap:8px}
-.controls input,.controls select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
-.filters{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.controls input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .bonus{margin:0 12px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
 .bonus h2{font-size:15px;margin:0 0 8px}
 .bonusgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -32,6 +45,159 @@ h1{font-size:18px;margin:0 0 10px}
 .bonus-step input:disabled{background:#f4f1f6;color:var(--accent);opacity:1}
 .bonuscheck{margin-top:8px;padding:8px;border-radius:9px;background:var(--soft);font-size:12px}
 .bonusextra{margin-top:7px;padding:9px;border-radius:9px;background:#fff4d8;color:#8a5b00;font-size:12px;font-weight:700}
+
+body.filter-opened{overflow:hidden}
+.filter-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  background:var(--bg);
+}
+.filter-overlay.open{display:flex;flex-direction:column}
+.filter-overlay-head{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 14px 12px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+}
+.filter-overlay-head h2{margin:0;font-size:18px}
+.filter-close{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:var(--soft);
+  color:var(--ink);
+  font-size:24px;
+  line-height:1;
+}
+.filter-scroll{
+  flex:1 1 auto;
+  overflow:auto;
+  padding:14px 14px 110px;
+  -webkit-overflow-scrolling:touch;
+}
+.filter-section{
+  margin-bottom:18px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+.filter-section:last-child{border-bottom:0}
+.filter-section h3{margin:0 0 9px;font-size:14px}
+.filter-hint{margin:-3px 0 9px;color:var(--muted);font-size:11px}
+.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.check-grid.characters{grid-template-columns:repeat(3,minmax(0,1fr))}
+.check-card{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  font-size:13px;
+}
+.check-card input{width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.filter-select{
+  width:100%;
+  min-height:44px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  font-size:16px;
+}
+.filter-group-title{
+  margin:13px 0 7px;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:800;
+}
+
+.data-management{
+  margin-top:4px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  overflow:hidden;
+}
+.data-management summary{
+  display:flex;
+  align-items:center;
+  min-height:48px;
+  padding:11px 13px;
+  cursor:pointer;
+  list-style:none;
+  font-size:14px;
+  font-weight:800;
+  user-select:none;
+}
+.data-management summary::-webkit-details-marker{display:none}
+.data-management summary::after{
+  content:"⌄";
+  margin-left:auto;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+.data-management[open] summary::after{transform:rotate(180deg)}
+.data-management[open] summary{border-bottom:1px solid var(--line)}
+.data-management-body{padding:12px}
+.data-management-note{
+  margin:0 0 10px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.55;
+}
+.data-reset-buttons{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.data-reset-buttons button{
+  min-height:44px;
+  padding:10px 12px;
+  border:1px solid #e3b9b4;
+  border-radius:10px;
+  background:#fff;
+  color:#b9493d;
+  font-size:13px;
+  font-weight:800;
+  text-align:left;
+}
+.data-reset-buttons button:active{
+  background:#fff1ef;
+  transform:translateY(1px);
+}
+
+.filter-actions{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  display:grid;
+  grid-template-columns:1fr 1.5fr;
+  gap:8px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.97);
+  border-top:1px solid var(--line);
+}
+.filter-actions button{
+  min-height:46px;
+  border-radius:11px;
+  font-weight:800;
+  font-size:14px;
+}
+.filter-reset{border:1px solid var(--line);background:#fff;color:var(--muted)}
+.filter-apply{border:0;background:var(--accent);color:#fff}
+
 .list{display:grid;gap:8px;padding:0 10px 130px}
 .item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px;display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center}
 .item.active{outline:2px solid #c9b4dd;background:#fefcff}
@@ -145,12 +311,11 @@ footer button{flex:1;border:0;border-radius:10px;padding:10px;background:var(--a
 footer button.secondary{background:#fff;color:var(--accent);border:1px solid var(--line)}
 @media(max-width:560px){
   input,select,textarea{font-size:16px}
-  .filters{grid-template-columns:1fr 1fr}
-  .filters select:last-child{grid-column:auto}
   .bonusgrid{grid-template-columns:1fr}
   .bonus-item{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center}
   .bonus-item>span{min-height:0;font-size:11px}
   .bonus-step{margin-top:0}
+  .check-grid.characters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .item{grid-template-columns:64px 1fr}
   .thumb{width:64px;height:64px}
   .qty{grid-column:2;justify-self:end}
@@ -199,33 +364,6 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 .share-generating{padding:28px 8px;color:var(--muted);font-size:13px}
 
 
-.reset-panel{
-  margin:0 12px 12px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px;
-}
-.reset-panel h2{
-  font-size:15px;
-  margin:0 0 9px;
-}
-.reset-buttons{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-.reset-buttons button{
-  min-height:42px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:#fff;
-  color:var(--muted);
-  font-weight:700;
-}
-.reset-buttons button:active{
-  background:var(--soft);
-}
 .to-top{
   position:fixed;
   right:14px;
@@ -251,11 +389,10 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
   transform:translateY(0);
 }
 @media(max-width:560px){
-  .reset-buttons{grid-template-columns:1fr}
 }
 
 @media print{
-  header,.controls,.bonus,footer{display:none!important}
+  header,.controls,.bonus,footer,.filter-overlay{display:none!important}
   body{background:#fff}
   .list{padding:0}
   .item{break-inside:avoid}
@@ -266,7 +403,10 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 </head>
 <body>
 <header>
-  <h1>GRAND SHOP 2026 代行メモ</h1>
+  <div class="header-row">
+    <h1>GRAND SHOP 2026 代行メモ</h1>
+    <button type="button" id="openFilters" class="filter-open">🔍 絞り込み<span id="filterCount"></span></button>
+  </div>
   <div class="summary">
     <div><small>選択商品</small><b id="count">0点</b></div>
     <div><small>合計金額</small><b id="total">¥0</b></div>
@@ -286,20 +426,75 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 
 <section class="controls">
   <input id="search" placeholder="商品名・キャラクター名を検索">
-  <div class="filters">
-    <select id="month"><option value="">全年月</option></select>
-    <select id="unit"><option value="">全所属</option></select>
-    <select id="character"><option value="">全キャラクター・種類</option></select>
-    <select id="category"><option value="">全カテゴリ</option></select>
-    <select id="selected">
-      <option value="">全商品</option>
-      <option value="selected">数量入力済み</option>
-      <option value="unselected">未入力</option>
-      <option value="unpurchased">未購入のみ</option>
-      <option value="purchased">購入済みのみ</option>
-      <option value="available">販売中のみ</option>
-      <option value="soldout">売り切れのみ</option>
-    </select>
+</section>
+
+
+<section id="filterOverlay" class="filter-overlay" aria-hidden="true">
+  <div class="filter-overlay-head">
+    <h2>絞り込み</h2>
+    <button type="button" id="closeFilters" class="filter-close" aria-label="絞り込みを閉じる">×</button>
+  </div>
+
+  <div class="filter-scroll">
+    <section class="filter-section">
+      <h3>発売月</h3>
+      <p class="filter-hint">複数選択できます。未選択ならすべて表示します。</p>
+      <div id="monthChecks" class="check-grid"></div>
+    </section>
+
+    <section class="filter-section">
+      <h3>所属</h3>
+      <select id="unit" class="filter-select">
+        <option value="">全所属</option>
+      </select>
+    </section>
+
+    <section class="filter-section">
+      <h3>キャラクター・種類</h3>
+      <p class="filter-hint">複数の推しをまとめて選べます。</p>
+      <div id="characterChecks"></div>
+    </section>
+
+    <section class="filter-section">
+      <h3>カテゴリ</h3>
+      <select id="category" class="filter-select">
+        <option value="">全カテゴリ</option>
+      </select>
+    </section>
+
+    <section class="filter-section">
+      <h3>商品の状態</h3>
+      <select id="selected" class="filter-select">
+        <option value="">全商品</option>
+        <option value="selected">数量入力済み</option>
+        <option value="unselected">未入力</option>
+        <option value="unpurchased">未購入のみ</option>
+        <option value="purchased">購入済みのみ</option>
+        <option value="available">販売中のみ</option>
+        <option value="soldout">売り切れのみ</option>
+      </select>
+    </section>
+
+    <section class="filter-section">
+      <details class="data-management">
+        <summary>データ管理</summary>
+        <div class="data-management-body">
+          <p class="data-management-note">
+            リセットしたデータは元に戻せません。必要な項目だけ実行してください。
+          </p>
+          <div class="data-reset-buttons">
+            <button type="button" id="resetQty">数量をリセット</button>
+            <button type="button" id="resetSoldOut">売切れをリセット</button>
+            <button type="button" id="resetPurchased">購入済みをリセット</button>
+          </div>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <div class="filter-actions">
+    <button type="button" id="resetFilters" class="filter-reset">条件をクリア</button>
+    <button type="button" id="applyFilters" class="filter-apply">この条件で表示</button>
   </div>
 </section>
 
@@ -335,14 +530,6 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
   <div id="bonusExtra" class="bonusextra" hidden></div>
 </section>
 
-<section class="reset-panel">
-  <h2>データをリセット</h2>
-  <div class="reset-buttons">
-    <button type="button" id="resetQty">数量リセット</button>
-    <button type="button" id="resetSoldOut">売切れリセット</button>
-    <button type="button" id="resetPurchased">購入済みリセット</button>
-  </div>
-</section>
 
 <main id="list" class="list"></main>
 
