@@ -367,6 +367,52 @@ document.getElementById('managePurchasers').onclick=()=>{
 };
 document.getElementById('closeManage').onclick=()=>document.getElementById('manageDialog').close();
 
+
+function resetQuantities(){
+  const targetLabel=isAll()?'全員分':`${activeBuyer()?.name || '購入者'}さん`;
+  if(!confirm(`${targetLabel}の数量をすべて0にしますか？`)) return;
+
+  if(isAll()){
+    app.purchasers.forEach(p=>{ app.quantities[p.id]={}; });
+  }else{
+    app.quantities[app.activePurchaserId]={};
+  }
+  saveApp();
+  render();
+}
+
+function resetSoldOut(){
+  if(!confirm('すべての売切れ状態を解除しますか？')) return;
+  app.soldOut={};
+  saveApp();
+  render();
+}
+
+function resetPurchased(){
+  const targetLabel=isAll()?'全員分':`${activeBuyer()?.name || '購入者'}さん`;
+  if(!confirm(`${targetLabel}の購入済み状態をすべて解除しますか？`)) return;
+
+  if(isAll()){
+    app.purchasers.forEach(p=>{ app.purchasedByPurchaser[p.id]={}; });
+  }else{
+    app.purchasedByPurchaser[app.activePurchaserId]={};
+  }
+  saveApp();
+  render();
+}
+
+document.getElementById('resetQty').onclick=resetQuantities;
+document.getElementById('resetSoldOut').onclick=resetSoldOut;
+document.getElementById('resetPurchased').onclick=resetPurchased;
+
+const toTopButton=document.getElementById('toTop');
+function updateToTopButton(){
+  toTopButton.classList.toggle('show',window.scrollY>350);
+}
+window.addEventListener('scroll',updateToTopButton,{passive:true});
+toTopButton.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+updateToTopButton();
+
 document.getElementById('copy').onclick=async()=>{
   const buyerLabel=isAll()?'全体':(activeBuyer()?.name||'購入者');
   const selected=products.filter(p=>getQty(p.id)>0 && !getSoldOut(p.id));

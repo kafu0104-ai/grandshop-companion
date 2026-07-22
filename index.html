@@ -188,6 +188,62 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 .share-actions [hidden]{display:none!important}
 .share-generating{padding:28px 8px;color:var(--muted);font-size:13px}
 
+
+.reset-panel{
+  margin:0 12px 12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+}
+.reset-panel h2{
+  font-size:15px;
+  margin:0 0 9px;
+}
+.reset-buttons{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.reset-buttons button{
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--muted);
+  font-weight:700;
+}
+.reset-buttons button:active{
+  background:var(--soft);
+}
+.to-top{
+  position:fixed;
+  right:14px;
+  bottom:calc(78px + env(safe-area-inset-bottom));
+  z-index:29;
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  background:var(--accent);
+  color:#fff;
+  font-size:22px;
+  font-weight:800;
+  box-shadow:0 5px 18px rgba(46,34,58,.22);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(8px);
+  transition:.18s ease;
+}
+.to-top.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+@media(max-width:560px){
+  .reset-buttons{grid-template-columns:1fr}
+}
+
 @media print{
   header,.controls,.bonus,footer{display:none!important}
   body{background:#fff}
@@ -253,7 +309,18 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
   <div id="bonusCheck" class="bonuscheck">特典0枚／配分0枚</div>
 </section>
 
+<section class="reset-panel">
+  <h2>データをリセット</h2>
+  <div class="reset-buttons">
+    <button type="button" id="resetQty">数量リセット</button>
+    <button type="button" id="resetSoldOut">売切れリセット</button>
+    <button type="button" id="resetPurchased">購入済みリセット</button>
+  </div>
+</section>
+
 <main id="list" class="list"></main>
+
+<button type="button" id="toTop" class="to-top" aria-label="ページトップへ戻る">↑</button>
 
 <footer>
   <button class="secondary" id="copy">代行メモをコピー</button>
