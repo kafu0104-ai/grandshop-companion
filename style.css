@@ -1,0 +1,116 @@
+/* purchase-confirm.html 専用 現在の index.html はCSSが
+内にあるため、 このstyle.cssは購入確認ページだけに適用されます。 */
+
+:root { –bg: #faf7fb; –card: #fff; –ink: #292433; –muted: #746c79;
+–accent: #7a4fa3; –line: #e6ddec; –soft: #f1e9f7; –success: #4f7f69;
+–success-bg: #f3faf7; –success-line: #b8d8ca; }
+
+-   { box-sizing: border-box; }
+
+html { min-height: 100%; background: var(–bg); }
+
+body { min-height: 100%; margin: 0; font-family: -apple-system,
+BlinkMacSystemFont, “Hiragino Sans”, “Yu Gothic”, sans-serif; color:
+var(–ink); background: var(–bg); }
+
+button, a, input { font: inherit; }
+
+.confirm-page { padding-bottom: calc(86px +
+env(safe-area-inset-bottom)); }
+
+.confirm-header { position: sticky; top: 0; z-index: 20; display: grid;
+grid-template-columns: 68px minmax(0, 1fr) 68px; align-items: start;
+gap: 8px; padding: 11px 12px 12px; border-bottom: 1px solid var(–line);
+background: rgba(250, 247, 251, 0.96); backdrop-filter: blur(10px); }
+
+.back-link { display: inline-flex; align-items: center; min-height:
+42px; color: var(–accent); font-size: 14px; font-weight: 800;
+text-decoration: none; }
+
+.confirm-heading { min-width: 0; text-align: center; }
+
+.confirm-heading h1 { margin: 1px 0 5px; font-size: 19px; line-height:
+1.35; }
+
+.buyer-name { min-height: 15px; margin: 0; color: var(–muted);
+font-size: 11px; font-weight: 700; }
+
+.confirm-progress { margin: 0; color: var(–accent); font-size: 13px;
+font-weight: 800; }
+
+.confirm-progress.complete { color: var(–success); }
+
+.confirm-list { display: grid; gap: 8px; padding: 12px 10px 20px; }
+
+.confirm-item { display: grid; grid-template-columns: 76px minmax(0,
+1fr); gap: 10px; align-items: center; padding: 9px; overflow: hidden;
+border: 1px solid var(–line); border-radius: 14px; background:
+var(–card); transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.confirm-item.confirmed { border-color: var(–success-line); background:
+var(–success-bg); }
+
+.confirm-thumb { width: 76px; height: 76px; overflow: hidden; border:
+1px solid var(–line); border-radius: 10px; background: #fff; }
+
+.confirm-thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+.confirm-info { min-width: 0; }
+
+.confirm-info h2 { margin: 0; font-size: 13px; line-height: 1.45; }
+
+.confirm-character { margin: 4px 0 0; color: var(–accent); font-size:
+12px; font-weight: 800; line-height: 1.4; }
+
+.confirm-quantity { margin: 6px 0 0; color: var(–muted); font-size:
+12px; }
+
+.confirm-quantity strong { margin-left: 3px; color: var(–ink);
+font-size: 16px; }
+
+.confirm-check { grid-column: 1 / -1; display: flex; align-items:
+center; justify-content: flex-end; gap: 8px; min-height: 38px;
+padding-top: 7px; border-top: 1px solid var(–line); color: var(–muted);
+font-size: 13px; font-weight: 800; cursor: pointer; }
+
+.confirm-check input { width: 22px; height: 22px; margin: 0;
+accent-color: var(–success); }
+
+.confirm-check:has(input:checked) { color: var(–success); }
+
+.empty-state { margin: 30px 12px; padding: 28px 18px; border: 1px solid
+var(–line); border-radius: 16px; background: var(–card); text-align:
+center; }
+
+.empty-state p { margin: 0 0 16px; color: var(–muted); font-size: 14px;
+}
+
+.empty-state a { display: inline-flex; align-items: center;
+justify-content: center; min-height: 44px; padding: 10px 16px;
+border-radius: 10px; background: var(–accent); color: #fff; font-size:
+14px; font-weight: 800; text-decoration: none; }
+
+.confirm-footer { position: fixed; right: 0; bottom: 0; left: 0;
+z-index: 30; display: grid; grid-template-columns: 1fr 1.35fr; gap: 8px;
+padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); border-top:
+1px solid var(–line); background: rgba(255, 255, 255, 0.97); }
+
+.footer-button { display: flex; align-items: center; justify-content:
+center; min-height: 46px; border-radius: 10px; font-size: 14px;
+font-weight: 800; text-decoration: none; }
+
+.footer-button.secondary { border: 1px solid var(–line); background:
+#fff; color: var(–accent); }
+
+.footer-button.primary { border: 0; background: var(–accent); color:
+#fff; }
+
+.footer-button.primary:disabled { opacity: 0.4; }
+
+@media (max-width: 560px) { .confirm-header { grid-template-columns:
+60px minmax(0, 1fr) 60px; }
+
+.confirm-item { grid-template-columns: 64px minmax(0, 1fr); }
+
+.confirm-thumb { width: 64px; height: 64px; } }
