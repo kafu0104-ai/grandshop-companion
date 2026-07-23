@@ -583,8 +583,20 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 <button type="button" id="toTop" class="to-top" aria-label="ページトップへ戻る">↑</button>
 
 <footer>
-  <button class="secondary" id="copy">代行メモをコピー</button>
-  <button id="shareImage">共有画像を作る</button>
+  <button
+    type="button"
+    class="secondary"
+    id="openPurchaseConfirm"
+    onclick="location.href='./purchase-confirm.html'"
+  >
+    購入確認
+  </button>
+  <button type="button" id="shareImage">共有画像を作る</button>
+
+  <!-- app.jsの既存処理を止めないため、コピーボタンは非表示で残しています -->
+  <button type="button" id="copy" hidden aria-hidden="true" tabindex="-1">
+    代行メモをコピー
+  </button>
 </footer>
 
 
