@@ -598,20 +598,19 @@ document.getElementById('resetMenu').addEventListener('change',event=>{
   const action=event.target.value;
   event.target.value='';
 
-  if(action==='filters'){
-    resetFilterForm();
-    return;
-  }
-  if(action==='qty'){
-    resetQty();
-    return;
-  }
-  if(action==='purchased'){
-    resetPurchased();
-    return;
-  }
-  if(action==='soldout'){
-    resetSoldOut();
+  switch(action){
+    case 'filters':
+      resetFilterForm();
+      break;
+    case 'qty':
+      resetQty();
+      break;
+    case 'purchased':
+      resetPurchased();
+      break;
+    case 'soldout':
+      resetSoldOut();
+      break;
   }
 });
 document.getElementById('openFilters').onclick=openFilterOverlay;
@@ -726,16 +725,6 @@ function resetPurchased(){
   saveApp();
   render();
 }
-
-function closeDataManagement(){};
-document.getElementById('resetSoldOut').onclick=()=>{
-  resetSoldOut();
-  closeDataManagement();
-};
-document.getElementById('resetPurchased').onclick=()=>{
-  resetPurchased();
-  closeDataManagement();
-};
 
 const toTopButton=document.getElementById('toTop');
 function updateToTopButton(){
