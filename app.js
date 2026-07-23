@@ -2,6 +2,7 @@
 const APP_KEY = 'grandshop-2026-purchaser-app-v1';
 const LEGACY_QTY_KEY = 'grandshop-2026-order-v2';
 const LEGACY_BONUS_KEY = 'grandshop-2026-bonus-v2';
+const FILTER_KEY = 'grandshop-2026-active-filters-v1';
 
 const defaultApp = {
   purchasers: [{id:'me', name:'わたし'}],
@@ -89,7 +90,7 @@ function combinedBonus(){
 }
 
 
-const activeFilters = {
+const defaultFilters = {
   months: [],
   characters: [],
   unit: '',
@@ -98,6 +99,33 @@ const activeFilters = {
   purchaseStatus: '',
   showSoldOut: false
 };
+
+function loadActiveFilters(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(FILTER_KEY) || 'null');
+    if(!saved || typeof saved!=='object') return {...defaultFilters};
+
+    return {
+      months:Array.isArray(saved.months) ? saved.months : [],
+      characters:Array.isArray(saved.characters) ? saved.characters : [],
+      unit:typeof saved.unit==='string' ? saved.unit : '',
+      category:typeof saved.category==='string' ? saved.category : '',
+      selected:typeof saved.selected==='string' ? saved.selected : '',
+      purchaseStatus:typeof saved.purchaseStatus==='string' ? saved.purchaseStatus : '',
+      showSoldOut:Boolean(saved.showSoldOut)
+    };
+  }catch(e){
+    return {...defaultFilters};
+  }
+}
+
+const activeFilters = loadActiveFilters();
+
+function saveActiveFilters(){
+  try{
+    localStorage.setItem(FILTER_KEY,JSON.stringify(activeFilters));
+  }catch(e){}
+}
 
 const LINKED_CHARACTER_FILTERS = new Map();
 
@@ -356,6 +384,7 @@ function applyFilterForm(){
   activeFilters.months=[...document.querySelectorAll('input[name="filterMonth"]:checked')].map(input=>input.value);
   activeFilters.characters=[...document.querySelectorAll('input[name="filterCharacter"]:checked')].map(input=>input.value);
   activeFilters.unit=document.getElementById('unit').value;
+  saveActiveFilters();
   updateFilterButton();
   closeFilterOverlay();
   render();
@@ -376,6 +405,7 @@ function resetFilterForm(){
   document.getElementById('selected').value='';
   document.getElementById('purchaseStatus').value='';
   document.getElementById('showSoldOut').checked=false;
+  saveActiveFilters();
   updateFilterButton();
   render();
 }
@@ -578,21 +608,25 @@ function changeBonus(key,d){
 document.getElementById('search').addEventListener('input',render);
 document.getElementById('category').addEventListener('change',event=>{
   activeFilters.category=event.target.value;
+  saveActiveFilters();
   updateFilterButton();
   render();
 });
 document.getElementById('selected').addEventListener('change',event=>{
   activeFilters.selected=event.target.value;
+  saveActiveFilters();
   updateFilterButton();
   render();
 });
 document.getElementById('purchaseStatus').addEventListener('change',event=>{
   activeFilters.purchaseStatus=event.target.value;
+  saveActiveFilters();
   updateFilterButton();
   render();
 });
 document.getElementById('showSoldOut').addEventListener('change',event=>{
   activeFilters.showSoldOut=event.target.checked;
+  saveActiveFilters();
   updateFilterButton();
   render();
 });
@@ -941,24 +975,16 @@ document.getElementById('shareDialog').addEventListener('close',()=>{});
 
 
 function initializeFilterDefaults(){
-  activeFilters.months=[];
-  activeFilters.characters=[];
-  activeFilters.unit='';
-  activeFilters.category='';
-  activeFilters.selected='';
-  activeFilters.purchaseStatus='';
-  activeFilters.showSoldOut=false;
-
   const category=document.getElementById('category');
   const selected=document.getElementById('selected');
   const purchaseStatus=document.getElementById('purchaseStatus');
   const showSoldOut=document.getElementById('showSoldOut');
   const resetMenu=document.getElementById('resetMenu');
 
-  if(category) category.value='';
-  if(selected) selected.value='';
-  if(purchaseStatus) purchaseStatus.value='';
-  if(showSoldOut) showSoldOut.checked=false;
+  if(category) category.value=activeFilters.category;
+  if(selected) selected.value=activeFilters.selected;
+  if(purchaseStatus) purchaseStatus.value=activeFilters.purchaseStatus;
+  if(showSoldOut) showSoldOut.checked=activeFilters.showSoldOut;
   if(resetMenu) resetMenu.value='';
 }
 
