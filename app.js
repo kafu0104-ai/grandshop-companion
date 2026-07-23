@@ -321,11 +321,13 @@ function getFilterCount(){
 }
 
 function updateFilterButton(){
-  const count=getFilterCount();
+  const count =
+    activeFilters.months.length
+    + activeFilters.characters.length
+    + Number(Boolean(activeFilters.unit));
+
   const button=document.getElementById('openFilters');
-  const countEl=document.getElementById('filterCount');
-  countEl.textContent=count ? `（${count}）` : '';
-  button.classList.toggle('active',count>0);
+  button.textContent=count ? `🔍 絞り込み（${count}）` : '🔍 絞り込み';
 }
 
 function openFilterOverlay(){
@@ -591,7 +593,27 @@ document.getElementById('showSoldOut').addEventListener('change',event=>{
   updateFilterButton();
   render();
 });
-document.getElementById('resetAllFilters').onclick=resetFilterForm;
+
+document.getElementById('resetMenu').addEventListener('change',event=>{
+  const action=event.target.value;
+  event.target.value='';
+
+  if(action==='filters'){
+    resetFilterForm();
+    return;
+  }
+  if(action==='qty'){
+    resetQty();
+    return;
+  }
+  if(action==='purchased'){
+    resetPurchased();
+    return;
+  }
+  if(action==='soldout'){
+    resetSoldOut();
+  }
+});
 document.getElementById('openFilters').onclick=openFilterOverlay;
 document.getElementById('closeFilters').onclick=closeFilterOverlay;
 document.getElementById('applyFilters').onclick=applyFilterForm;
@@ -705,12 +727,7 @@ function resetPurchased(){
   render();
 }
 
-function closeDataManagement(){}
-
-document.getElementById('resetQty').onclick=()=>{
-  resetQuantities();
-  closeDataManagement();
-};
+function closeDataManagement(){};
 document.getElementById('resetSoldOut').onclick=()=>{
   resetSoldOut();
   closeDataManagement();
@@ -944,11 +961,13 @@ function initializeFilterDefaults(){
   const selected=document.getElementById('selected');
   const purchaseStatus=document.getElementById('purchaseStatus');
   const showSoldOut=document.getElementById('showSoldOut');
+  const resetMenu=document.getElementById('resetMenu');
 
   if(category) category.value='';
   if(selected) selected.value='';
   if(purchaseStatus) purchaseStatus.value='';
   if(showSoldOut) showSoldOut.checked=false;
+  if(resetMenu) resetMenu.value='';
 }
 
 initializeFilterDefaults();
