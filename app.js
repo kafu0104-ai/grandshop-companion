@@ -340,10 +340,16 @@ function openFilterOverlay(){
 
 function closeFilterOverlay(){
   const overlay=document.getElementById('filterOverlay');
+
+  // モーダル内のボタンにフォーカスが残ったまま
+  // aria-hidden を付けないよう、先にフォーカスを外す
+  if(overlay.contains(document.activeElement)){
+    document.activeElement.blur();
+  }
+
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden','true');
   document.body.classList.remove('filter-opened');
-  closeDataManagement();
 }
 
 function applyFilterForm(){
@@ -449,11 +455,8 @@ function render() {
           <input type="number" min="0" max="${p.limit||999}" value="${n}" ${soldOut?'disabled':''} onchange="setQty('${p.id}',this.value,${p.limit||999})">
           <button ${soldOut?'disabled':''} onclick="changeQty('${p.id}',1,${p.limit||999})">＋</button>
         </div>`;
-    const purchaseControl = isAll()
-      ? ''
-      : `<button type="button" class="purchase-check ${purchased?'checked':''}" onclick="togglePurchased('${p.id}')">
-          ${purchased?'購入済み':'購入確認'}
-        </button>`;
+    // 購入確認は purchase-confirm.html でまとめて行う
+    const purchaseControl = '';
     const soldOutControl = `<button type="button" class="soldout-check ${soldOut?'checked':''}" onclick="toggleSoldOut('${p.id}')">
       売切れ
     </button>`;
