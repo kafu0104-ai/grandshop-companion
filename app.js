@@ -96,8 +96,8 @@ const activeFilters = {
   category: '',
   selected: '',
   purchaseStatus: '',
-  showAvailable: true,
-  showSoldOut: true
+  showAvailable: false,
+  showSoldOut: false
 };
 
 const LINKED_CHARACTER_FILTERS = new Map();
@@ -319,7 +319,7 @@ function getFilterCount(){
     + Number(Boolean(activeFilters.category))
     + Number(Boolean(activeFilters.selected))
     + Number(Boolean(activeFilters.purchaseStatus))
-    + Number(!(activeFilters.showAvailable && activeFilters.showSoldOut));
+    + Number(activeFilters.showAvailable || activeFilters.showSoldOut);
 }
 
 function updateFilterButton(){
@@ -362,16 +362,16 @@ function resetFilterForm(){
   activeFilters.category='';
   activeFilters.selected='';
   activeFilters.purchaseStatus='';
-  activeFilters.showAvailable=true;
-  activeFilters.showSoldOut=true;
+  activeFilters.showAvailable=false;
+  activeFilters.showSoldOut=false;
 
   document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>input.checked=false);
   document.getElementById('unit').value='';
   document.getElementById('category').value='';
   document.getElementById('selected').value='';
   document.getElementById('purchaseStatus').value='';
-  document.getElementById('showAvailable').checked=true;
-  document.getElementById('showSoldOut').checked=true;
+  document.getElementById('showAvailable').checked=false;
+  document.getElementById('showSoldOut').checked=false;
   updateFilterButton();
   render();
 }
@@ -434,8 +434,9 @@ function render() {
       || (purchaseStatus==='purchased' && purchased);
 
     const availabilityHit =
-      (showAvailable && !soldOut) ||
-      (showSoldOut && soldOut);
+      (!showAvailable && !showSoldOut)
+      || (showAvailable && !soldOut)
+      || (showSoldOut && soldOut);
 
     const monthHit=!months.length || months.includes(p.releaseMonth);
     return hit && monthHit && unitHit && characterHit && categoryHit
@@ -611,6 +612,8 @@ document.getElementById('resetAllFilters').onclick=()=>{
 document.getElementById('openFilters').onclick=openFilterOverlay;
 document.getElementById('closeFilters').onclick=closeFilterOverlay;
 document.getElementById('applyFilters').onclick=applyFilterForm;
+const compatResetButton=document.getElementById('resetFilters');
+if(compatResetButton) compatResetButton.onclick=resetFilterForm;
 document.addEventListener('keydown',event=>{
   if(event.key==='Escape' && document.getElementById('filterOverlay').classList.contains('open')){
     closeFilterOverlay();

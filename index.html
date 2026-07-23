@@ -494,11 +494,11 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 
   <div class="availability-filters" aria-label="販売状況">
     <label class="availability-chip">
-      <input type="checkbox" id="showAvailable" checked>
+      <input type="checkbox" id="showAvailable">
       <span>販売中</span>
     </label>
     <label class="availability-chip">
-      <input type="checkbox" id="showSoldOut" checked>
+      <input type="checkbox" id="showSoldOut">
       <span>売切れ</span>
     </label>
   </div>
@@ -564,6 +564,8 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
 
   <div class="filter-actions" style="grid-template-columns:1fr">
     <button type="button" id="applyFilters" class="filter-apply">この条件で表示</button>
+<button type="button" id="resetFilters" hidden aria-hidden="true" tabindex="-1"></button>
+
   </div>
 </section>
 
