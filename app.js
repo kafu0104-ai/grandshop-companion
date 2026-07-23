@@ -94,7 +94,10 @@ const activeFilters = {
   characters: [],
   unit: '',
   category: '',
-  selected: ''
+  selected: '',
+  purchaseStatus: '',
+  showAvailable: true,
+  showSoldOut: true
 };
 
 const LINKED_CHARACTER_FILTERS = new Map();
@@ -154,7 +157,7 @@ function setupFilters() {
   const categories=[...new Set(products.map(p=>p.category).filter(Boolean))]
     .sort((a,b)=>a.localeCompare(b,'ja'));
   document.getElementById('category').innerHTML =
-    '<option value="">全カテゴリ</option>' +
+    '<option value="">商品カテゴリ</option>' +
     '<option value="__random__">トレーディング</option>' +
     categories.map(category => `<option value="${category}">${category}</option>`).join('');
 
@@ -304,6 +307,9 @@ function syncFilterForm(){
   document.getElementById('unit').value=activeFilters.unit;
   document.getElementById('category').value=activeFilters.category;
   document.getElementById('selected').value=activeFilters.selected;
+  document.getElementById('purchaseStatus').value=activeFilters.purchaseStatus;
+  document.getElementById('showAvailable').checked=activeFilters.showAvailable;
+  document.getElementById('showSoldOut').checked=activeFilters.showSoldOut;
 }
 
 function getFilterCount(){
@@ -311,7 +317,9 @@ function getFilterCount(){
     + activeFilters.characters.length
     + Number(Boolean(activeFilters.unit))
     + Number(Boolean(activeFilters.category))
-    + Number(Boolean(activeFilters.selected));
+    + Number(Boolean(activeFilters.selected))
+    + Number(Boolean(activeFilters.purchaseStatus))
+    + Number(!(activeFilters.showAvailable && activeFilters.showSoldOut));
 }
 
 function updateFilterButton(){
@@ -342,20 +350,30 @@ function applyFilterForm(){
   activeFilters.months=[...document.querySelectorAll('input[name="filterMonth"]:checked')].map(input=>input.value);
   activeFilters.characters=[...document.querySelectorAll('input[name="filterCharacter"]:checked')].map(input=>input.value);
   activeFilters.unit=document.getElementById('unit').value;
-  activeFilters.category=document.getElementById('category').value;
-  activeFilters.selected=document.getElementById('selected').value;
   updateFilterButton();
   closeFilterOverlay();
   render();
 }
 
 function resetFilterForm(){
-  document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>{
-    input.checked=false;
-  });
+  activeFilters.months=[];
+  activeFilters.characters=[];
+  activeFilters.unit='';
+  activeFilters.category='';
+  activeFilters.selected='';
+  activeFilters.purchaseStatus='';
+  activeFilters.showAvailable=true;
+  activeFilters.showSoldOut=true;
+
+  document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>input.checked=false);
   document.getElementById('unit').value='';
   document.getElementById('category').value='';
   document.getElementById('selected').value='';
+  document.getElementById('purchaseStatus').value='';
+  document.getElementById('showAvailable').checked=true;
+  document.getElementById('showSoldOut').checked=true;
+  updateFilterButton();
+  render();
 }
 
 function renderTabs(){
@@ -387,6 +405,9 @@ function render() {
   const characterFilters=activeFilters.characters;
   const category=activeFilters.category;
   const selected=activeFilters.selected;
+  const purchaseStatus=activeFilters.purchaseStatus;
+  const showAvailable=activeFilters.showAvailable;
+  const showSoldOut=activeFilters.showSoldOut;
 
   const visible=products.filter(p=>{
     const n=getQty(p.id);
@@ -406,13 +427,19 @@ function render() {
     const categoryHit=!category || (category==='__random__' ? p.random : (!p.random && p.category===category));
     const selectedHit = !selected
       || (selected==='selected' && n>0)
-      || (selected==='unselected' && n===0)
-      || (selected==='unpurchased' && n>0 && !purchased && !soldOut)
-      || (selected==='purchased' && purchased)
-      || (selected==='available' && !soldOut)
-      || (selected==='soldout' && soldOut);
+      || (selected==='unselected' && n===0);
+
+    const purchaseHit = !purchaseStatus
+      || (purchaseStatus==='unpurchased' && !purchased)
+      || (purchaseStatus==='purchased' && purchased);
+
+    const availabilityHit =
+      (showAvailable && !soldOut) ||
+      (showSoldOut && soldOut);
+
     const monthHit=!months.length || months.includes(p.releaseMonth);
-    return hit && monthHit && unitHit && characterHit && categoryHit && selectedHit;
+    return hit && monthHit && unitHit && characterHit && categoryHit
+      && selectedHit && purchaseHit && availabilityHit;
   });
 
   document.getElementById('list').innerHTML=visible.map(p=>{
@@ -561,10 +588,29 @@ document.getElementById('selected').addEventListener('change',event=>{
   updateFilterButton();
   render();
 });
+document.getElementById('purchaseStatus').addEventListener('change',event=>{
+  activeFilters.purchaseStatus=event.target.value;
+  updateFilterButton();
+  render();
+});
+document.getElementById('showAvailable').addEventListener('change',event=>{
+  activeFilters.showAvailable=event.target.checked;
+  updateFilterButton();
+  render();
+});
+document.getElementById('showSoldOut').addEventListener('change',event=>{
+  activeFilters.showSoldOut=event.target.checked;
+  updateFilterButton();
+  render();
+});
+document.getElementById('resetAllFilters').onclick=()=>{
+  resetFilterForm();
+  const panel=document.querySelector('.main-reset');
+  if(panel) panel.open=false;
+};
 document.getElementById('openFilters').onclick=openFilterOverlay;
 document.getElementById('closeFilters').onclick=closeFilterOverlay;
 document.getElementById('applyFilters').onclick=applyFilterForm;
-document.getElementById('resetFilters').onclick=resetFilterForm;
 document.addEventListener('keydown',event=>{
   if(event.key==='Escape' && document.getElementById('filterOverlay').classList.contains('open')){
     closeFilterOverlay();
@@ -674,7 +720,7 @@ function resetPurchased(){
 }
 
 function closeDataManagement(){
-  const panel=document.querySelector('.data-management');
+  const panel=document.querySelector('.main-reset');
   if(panel) panel.open=false;
 }
 
