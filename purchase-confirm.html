@@ -1,12 +1,563 @@
 <!doctype html>
-購入確認｜GRAND SHOP 2026 代行メモ
-← 戻る
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>購入確認｜GRAND SHOP 2026 代行メモ</title>
+  <style>
+/* purchase-confirm.html 専用
+   現在の index.html はCSSが<head>内にあるため、
+   このstyle.cssは購入確認ページだけに適用されます。 */
 
+:root {
+  --bg: #faf7fb;
+  --card: #fff;
+  --ink: #292433;
+  --muted: #746c79;
+  --accent: #7a4fa3;
+  --line: #e6ddec;
+  --soft: #f1e9f7;
+  --success: #4f7f69;
+  --success-bg: #f3faf7;
+  --success-line: #b8d8ca;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Yu Gothic", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+button,
+a,
+input {
+  font: inherit;
+}
+
+.confirm-page {
+  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
+.confirm-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) 68px;
+  align-items: start;
+  gap: 8px;
+  padding: 11px 12px 12px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(250, 247, 251, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.confirm-heading {
+  min-width: 0;
+  text-align: center;
+}
+
+.confirm-heading h1 {
+  margin: 1px 0 5px;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.buyer-name {
+  min-height: 15px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.confirm-progress {
+  margin: 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.confirm-progress.complete {
+  color: var(--success);
+}
+
+.confirm-list {
+  display: grid;
+  gap: 8px;
+  padding: 12px 10px 20px;
+}
+
+.confirm-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 9px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.confirm-item.confirmed {
+  border-color: var(--success-line);
+  background: var(--success-bg);
+}
+
+.confirm-thumb {
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.confirm-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.confirm-info {
+  min-width: 0;
+}
+
+.confirm-info h2 {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.confirm-character {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.confirm-quantity {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.confirm-quantity strong {
+  margin-left: 3px;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.confirm-check {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 38px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.confirm-check input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--success);
+}
+
+.confirm-check:has(input:checked) {
+  color: var(--success);
+}
+
+.empty-state {
+  margin: 30px 12px;
+  padding: 28px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  text-align: center;
+}
+
+.empty-state p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.empty-state a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.confirm-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 8px;
+  padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.footer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.footer-button.secondary {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--accent);
+}
+
+.footer-button.primary {
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+}
+
+.footer-button.primary:disabled {
+  opacity: 0.4;
+}
+
+@media (max-width: 560px) {
+  .confirm-header {
+    grid-template-columns: 60px minmax(0, 1fr) 60px;
+  }
+
+  .confirm-item {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .confirm-thumb {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+  </style>
+</head>
+<body class="confirm-page">
+  <header class="confirm-header">
+    <a class="back-link" href="./index.html" aria-label="商品選択ページへ戻る">← 戻る</a>
+
+    <div class="confirm-heading">
       <p id="buyerName" class="buyer-name"></p>
       <h1>購入確認</h1>
       <p id="confirmProgress" class="confirm-progress">0商品中 0商品確認済み</p>
     </div>
+  </header>
 
-数量が入力されている商品はありません。
-商品選択ページへ戻る
-戻る 完了
+  <main>
+    <section id="confirmList" class="confirm-list" aria-live="polite"></section>
+
+    <section id="emptyState" class="empty-state" hidden>
+      <p>数量が入力されている商品はありません。</p>
+      <a href="./index.html">商品選択ページへ戻る</a>
+    </section>
+  </main>
+
+  <footer class="confirm-footer">
+    <a class="footer-button secondary" href="./index.html">戻る</a>
+    <button type="button" id="completeButton" class="footer-button primary">完了</button>
+  </footer>
+
+  <script src="./master.js?v=20260723-2135"></script>
+  <script src="./products.js?v=20260723-2135"></script>
+  <script>
+// GRAND SHOP 2026 購入確認ページ
+const APP_KEY = 'grandshop-2026-purchaser-app-v1';
+
+const defaultApp = {
+  purchasers: [{ id: 'me', name: 'わたし' }],
+  activePurchaserId: 'me',
+  quantities: { me: {} },
+  bonusByPurchaser: { me: { yukata: 0, shining: 0, raging: 0 } },
+  purchasedByPurchaser: { me: {} },
+  soldOut: {}
+};
+
+let app;
+
+try {
+  app = JSON.parse(localStorage.getItem(APP_KEY) || 'null');
+} catch (error) {
+  console.error('保存データの読み込みに失敗しました。', error);
+}
+
+if (!app || !Array.isArray(app.purchasers)) {
+  app = typeof structuredClone === 'function'
+    ? structuredClone(defaultApp)
+    : JSON.parse(JSON.stringify(defaultApp));
+}
+
+app.quantities ||= {};
+app.purchasedByPurchaser ||= {};
+app.soldOut ||= {};
+app.activePurchaserId ||= 'me';
+
+app.purchasers.forEach((purchaser) => {
+  app.quantities[purchaser.id] ||= {};
+  app.purchasedByPurchaser[purchaser.id] ||= {};
+});
+
+const isAll = () => app.activePurchaserId === 'all';
+
+const activeBuyer = () =>
+  app.purchasers.find((purchaser) => purchaser.id === app.activePurchaserId);
+
+function saveApp() {
+  try {
+    localStorage.setItem(APP_KEY, JSON.stringify(app));
+  } catch (error) {
+    console.error('保存に失敗しました。', error);
+  }
+}
+
+function getQty(productId, purchaserId = app.activePurchaserId) {
+  if (purchaserId === 'all') {
+    return app.purchasers.reduce((sum, purchaser) => {
+      return sum + Number(app.quantities[purchaser.id]?.[productId] || 0);
+    }, 0);
+  }
+
+  return Number(app.quantities[purchaserId]?.[productId] || 0);
+}
+
+function getPurchased(productId, purchaserId = app.activePurchaserId) {
+  if (purchaserId === 'all') {
+    const purchasersWithQuantity = app.purchasers.filter(
+      (purchaser) => getQty(productId, purchaser.id) > 0
+    );
+
+    return (
+      purchasersWithQuantity.length > 0 &&
+      purchasersWithQuantity.every(
+        (purchaser) =>
+          Boolean(app.purchasedByPurchaser[purchaser.id]?.[productId])
+      )
+    );
+  }
+
+  return Boolean(app.purchasedByPurchaser[purchaserId]?.[productId]);
+}
+
+function getSoldOut(productId) {
+  return Boolean(app.soldOut[productId]);
+}
+
+function markPurchased(productId) {
+  if (isAll()) {
+    app.purchasers.forEach((purchaser) => {
+      if (getQty(productId, purchaser.id) > 0) {
+        app.purchasedByPurchaser[purchaser.id] ||= {};
+        app.purchasedByPurchaser[purchaser.id][productId] = true;
+      }
+    });
+    return;
+  }
+
+  app.purchasedByPurchaser[app.activePurchaserId] ||= {};
+  app.purchasedByPurchaser[app.activePurchaserId][productId] = true;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function getCharacterLabel(product) {
+  return (
+    product.character ||
+    product.princeCat ||
+    product.mascot ||
+    product.variant ||
+    ''
+  );
+}
+
+function compareProducts(a, b) {
+  return (
+    Number(a.displayOrder || 0) - Number(b.displayOrder || 0) ||
+    Number(a.variantNo || 0) - Number(b.variantNo || 0) ||
+    String(a.id).localeCompare(String(b.id), 'ja')
+  );
+}
+
+const selectedProducts = products
+  .filter((product) => getQty(product.id) > 0 && !getSoldOut(product.id))
+  .sort(compareProducts);
+
+const checkedProductIds = new Set(
+  selectedProducts
+    .filter((product) => getPurchased(product.id))
+    .map((product) => product.id)
+);
+
+const confirmList = document.getElementById('confirmList');
+const emptyState = document.getElementById('emptyState');
+const completeButton = document.getElementById('completeButton');
+const confirmProgress = document.getElementById('confirmProgress');
+const buyerName = document.getElementById('buyerName');
+
+function updateProgress() {
+  const total = selectedProducts.length;
+  const confirmed = checkedProductIds.size;
+
+  confirmProgress.textContent = `${total}商品中 ${confirmed}商品確認済み`;
+  confirmProgress.classList.toggle('complete', total > 0 && confirmed === total);
+  completeButton.disabled = total === 0 || confirmed === 0;
+}
+
+function renderBuyerName() {
+  buyerName.textContent = isAll()
+    ? '全体'
+    : `${activeBuyer()?.name || '購入者'}さん`;
+}
+
+function renderProducts() {
+  if (!selectedProducts.length) {
+    confirmList.innerHTML = '';
+    confirmList.hidden = true;
+    emptyState.hidden = false;
+    updateProgress();
+    return;
+  }
+
+  confirmList.hidden = false;
+  emptyState.hidden = true;
+
+  confirmList.innerHTML = selectedProducts
+    .map((product) => {
+      const quantity = getQty(product.id);
+      const characterLabel = getCharacterLabel(product);
+      const checked = checkedProductIds.has(product.id);
+
+      return `
+        <article class="confirm-item ${checked ? 'confirmed' : ''}" data-product-id="${escapeHtml(product.id)}">
+          <div class="confirm-thumb">
+            <img
+              loading="lazy"
+              src="${escapeHtml(product.image)}"
+              alt=""
+            >
+          </div>
+
+          <div class="confirm-info">
+            <h2>${escapeHtml(product.name)}</h2>
+            ${characterLabel
+              ? `<p class="confirm-character">${escapeHtml(characterLabel)}</p>`
+              : ''}
+            <p class="confirm-quantity">数量 <strong>${quantity}</strong></p>
+          </div>
+
+          <label class="confirm-check">
+            <input
+              type="checkbox"
+              data-confirm-id="${escapeHtml(product.id)}"
+              ${checked ? 'checked' : ''}
+            >
+            <span>購入確認</span>
+          </label>
+        </article>
+      `;
+    })
+    .join('');
+
+  confirmList
+    .querySelectorAll('input[data-confirm-id]')
+    .forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const productId = checkbox.dataset.confirmId;
+        const card = checkbox.closest('.confirm-item');
+
+        if (checkbox.checked) {
+          checkedProductIds.add(productId);
+        } else {
+          checkedProductIds.delete(productId);
+        }
+
+        card?.classList.toggle('confirmed', checkbox.checked);
+        updateProgress();
+      });
+    });
+
+  updateProgress();
+}
+
+completeButton.addEventListener('click', () => {
+  if (!checkedProductIds.size) return;
+
+  checkedProductIds.forEach(markPurchased);
+  saveApp();
+
+  const total = selectedProducts.length;
+  const confirmed = checkedProductIds.size;
+  const message =
+    confirmed === total
+      ? `${confirmed}商品を購入済みにしました。`
+      : `${confirmed}商品を購入済みにしました。\n未確認の商品はそのまま残ります。`;
+
+  alert(message);
+  location.href = './index.html';
+});
+
+renderBuyerName();
+renderProducts();
+
+  </script>
+</body>
+</html>
