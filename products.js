@@ -7323,7 +7323,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "食品",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/m016_rz3g/a02.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/m016_rz3g/b02.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=m016",
     "random": false
   },
