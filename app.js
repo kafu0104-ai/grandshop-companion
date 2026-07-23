@@ -116,8 +116,8 @@ function linkCharacterFilters(firstValue,secondValue){
 }
 
 function syncLinkedCharacterCheckbox(source){
-  // チェックを入れた時だけ、対応するキャラクター／PRINCE CATも追加する。
-  // チェックを外した時は相手側を変更しないので、片方だけ残せる。
+  // ONにした時だけ、対応するキャラクター／PRINCE CATも選択する。
+  // OFFにした時は相手側を変更しないため、片方だけ残せる。
   if(!source.checked) return;
 
   const linkedValue=LINKED_CHARACTER_FILTERS.get(source.value);
