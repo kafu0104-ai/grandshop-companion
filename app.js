@@ -603,7 +603,7 @@ document.getElementById('resetMenu').addEventListener('change',event=>{
       resetFilterForm();
       break;
     case 'qty':
-      resetQty();
+      resetQuantities();
       break;
     case 'purchased':
       resetPurchased();
@@ -959,15 +959,24 @@ function initializeFilterDefaults(){
   if(resetMenu) resetMenu.value='';
 }
 
-initializeFilterDefaults();
-setupFilters();
-syncBonusInputs();
-render();
+function bootApp(){
+  try{
+    initializeFilterDefaults();
+    setupFilters();
+    syncBonusInputs();
+    render();
+  }catch(error){
+    console.error('アプリの初期化に失敗しました。',error);
+    const list=document.getElementById('list');
+    if(list){
+      list.innerHTML='<p style="padding:16px">商品データを読み込めませんでした。ページを再読み込みしてください。</p>';
+    }
+  }
+}
+
+bootApp();
 window.addEventListener('pageshow',event=>{
   if(event.persisted){
-    initializeFilterDefaults();
-    syncFilterForm();
-    updateFilterButton();
-    render();
+    bootApp();
   }
 });
