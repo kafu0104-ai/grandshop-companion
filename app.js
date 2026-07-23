@@ -116,16 +116,21 @@ function linkCharacterFilters(firstValue,secondValue){
 }
 
 function syncLinkedCharacterCheckbox(source){
+  // チェックを入れた時だけ、対応するキャラクター／PRINCE CATも追加する。
+  // チェックを外した時は相手側を変更しないので、片方だけ残せる。
+  if(!source.checked) return;
+
   const linkedValue=LINKED_CHARACTER_FILTERS.get(source.value);
   if(!linkedValue) return;
+
   const linked=document.querySelector(
     `input[name="filterCharacter"][value="${CSS.escape(linkedValue)}"]`
   );
-  if(linked) linked.checked=source.checked;
+  if(linked) linked.checked=true;
 }
 
-function characterCheckCard(value,label,note='',linked=false){
-  return `<label class="check-card${linked?' linked':''}">
+function characterCheckCard(value,label,note=''){
+  return `<label class="check-card">
     <input type="checkbox" name="filterCharacter" value="${value}">
     <span>${label}${note?`<small>${note}</small>`:''}</span>
   </label>`;
@@ -190,12 +195,7 @@ function setupFilters() {
         const catValue=`princeCat:${linkedCat.id}`;
         linkCharacterFilters(characterValue,catValue);
         princeCatCards.push(
-          characterCheckCard(
-            catValue,
-            linkedCat.name,
-            `${character.name}と連動`,
-            true
-          )
+          characterCheckCard(catValue,linkedCat.name)
         );
       }
     });
@@ -300,9 +300,6 @@ function syncFilterForm(){
   });
   document.querySelectorAll('input[name="filterCharacter"]').forEach(input=>{
     input.checked=activeFilters.characters.includes(input.value);
-  });
-  document.querySelectorAll('input[name="filterCharacter"]:checked').forEach(input=>{
-    syncLinkedCharacterCheckbox(input);
   });
   document.getElementById('unit').value=activeFilters.unit;
   document.getElementById('category').value=activeFilters.category;
