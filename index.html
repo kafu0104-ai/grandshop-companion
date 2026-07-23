@@ -37,6 +37,7 @@ h1{font-size:18px;margin:0;min-width:0}
   border-radius:10px;background:#fff;color:var(--ink);font-size:15px
 }
 .availability-filters{display:flex;gap:8px}
+.availability-chip.soldout-only{flex:0 0 calc(50% - 4px)}
 .availability-chip{
   flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
   min-height:40px;padding:8px 10px;border:1px solid var(--line);
@@ -46,20 +47,41 @@ h1{font-size:18px;margin:0;min-width:0}
 .availability-chip input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
 .availability-chip:has(input:checked){border-color:#c9b4dd;background:var(--soft);color:var(--accent)}
 .quick-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.quick-filter-button{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  font-weight:700;text-align:left;list-style:none
+.reset-panel{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
-.quick-filter-button::-webkit-details-marker{display:none}
-.quick-filter-button::after{content:"⌄";color:var(--muted);font-size:17px}
-.main-reset[open]>.quick-filter-button{border-color:#c9b4dd;background:var(--soft);color:var(--accent)}
-.main-reset-menu{
-  grid-column:1/-1;margin-top:8px;padding:10px;border:1px solid var(--line);
-  border-radius:12px;background:#fff
+.reset-panel-title{
+  grid-column:1/-1;
+  margin:2px 0 0;
+  font-size:14px;
+  font-weight:800;
+  color:var(--ink);
 }
-.main-reset-menu .filter-only-reset{
-  width:100%;min-height:42px;margin-bottom:9px;border:1px solid var(--line);
-  border-radius:10px;background:#fff;color:var(--accent);font-weight:800
+.reset-panel button{
+  min-height:42px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  font-size:14px;
+  font-weight:800;
+}
+.reset-panel .filter-only-reset{
+  color:var(--accent);
+}
+.reset-panel .danger-reset{
+  color:var(--danger,#c9473f);
+  border-color:#efb1aa;
+}
+.reset-panel .data-management-note{
+  grid-column:1/-1;
+  margin:0;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--muted);
 }
 .bonus{margin:0 12px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
 .bonus h2{font-size:15px;margin:0 0 8px}
@@ -493,45 +515,37 @@ dialog::backdrop{background:rgba(30,24,36,.38)}
   <input id="search" placeholder="商品名・キャラクター名を検索">
 
   <div class="availability-filters" aria-label="販売状況">
-    <label class="availability-chip">
-      <input type="checkbox" id="showAvailable">
-      <span>販売中</span>
-    </label>
-    <label class="availability-chip">
-      <input type="checkbox" id="showSoldOut">
+    <label class="availability-chip soldout-only">
+      <input type="checkbox" id="showSoldOut" autocomplete="off">
       <span>売切れ</span>
     </label>
   </div>
 
   <div class="quick-filters">
-    <select id="category" aria-label="商品カテゴリで絞り込み">
+    <select id="category" aria-label="商品カテゴリで絞り込み" autocomplete="off">
       <option value="">商品カテゴリ</option>
     </select>
 
-    <select id="selected" aria-label="選択状態で絞り込み">
+    <select id="selected" aria-label="選択状態で絞り込み" autocomplete="off">
       <option value="">選択状態</option>
       <option value="selected">数量入力済み</option>
       <option value="unselected">数量未入力</option>
     </select>
 
-    <select id="purchaseStatus" aria-label="購入状況で絞り込み">
+    <select id="purchaseStatus" aria-label="購入状況で絞り込み" autocomplete="off">
       <option value="">購入・販売状況</option>
       <option value="unpurchased">未購入</option>
       <option value="purchased">購入済み</option>
     </select>
 
-    <details class="main-reset">
-      <summary class="quick-filter-button">リセット</summary>
-      <div class="main-reset-menu">
-        <button type="button" id="resetAllFilters" class="filter-only-reset">絞り込みをリセット</button>
-        <p class="data-management-note">数量・売切れ・購入済みのリセットは元に戻せません。</p>
-        <div class="data-reset-buttons">
-          <button type="button" id="resetQty">数量をリセット</button>
-          <button type="button" id="resetPurchased">購入済みをリセット</button>
-          <button type="button" id="resetSoldOut">売切れをリセット</button>
-        </div>
-      </div>
-    </details>
+    <div class="reset-panel">
+      <p class="reset-panel-title">リセット</p>
+      <button type="button" id="resetAllFilters" class="filter-only-reset">絞り込みをリセット</button>
+      <button type="button" id="resetQty" class="danger-reset">数量をリセット</button>
+      <button type="button" id="resetPurchased" class="danger-reset">購入済みをリセット</button>
+      <button type="button" id="resetSoldOut" class="danger-reset">売切れをリセット</button>
+      <p class="data-management-note">数量・売切れ・購入済みのリセットは元に戻せません。</p>
+    </div>
   </div>
 </section>
 

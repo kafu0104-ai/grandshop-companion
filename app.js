@@ -96,7 +96,6 @@ const activeFilters = {
   category: '',
   selected: '',
   purchaseStatus: '',
-  showAvailable: false,
   showSoldOut: false
 };
 
@@ -308,7 +307,6 @@ function syncFilterForm(){
   document.getElementById('category').value=activeFilters.category;
   document.getElementById('selected').value=activeFilters.selected;
   document.getElementById('purchaseStatus').value=activeFilters.purchaseStatus;
-  document.getElementById('showAvailable').checked=activeFilters.showAvailable;
   document.getElementById('showSoldOut').checked=activeFilters.showSoldOut;
 }
 
@@ -319,7 +317,7 @@ function getFilterCount(){
     + Number(Boolean(activeFilters.category))
     + Number(Boolean(activeFilters.selected))
     + Number(Boolean(activeFilters.purchaseStatus))
-    + Number(activeFilters.showAvailable || activeFilters.showSoldOut);
+    + Number(activeFilters.showSoldOut);
 }
 
 function updateFilterButton(){
@@ -362,7 +360,6 @@ function resetFilterForm(){
   activeFilters.category='';
   activeFilters.selected='';
   activeFilters.purchaseStatus='';
-  activeFilters.showAvailable=false;
   activeFilters.showSoldOut=false;
 
   document.querySelectorAll('#filterOverlay input[type="checkbox"]').forEach(input=>input.checked=false);
@@ -370,7 +367,6 @@ function resetFilterForm(){
   document.getElementById('category').value='';
   document.getElementById('selected').value='';
   document.getElementById('purchaseStatus').value='';
-  document.getElementById('showAvailable').checked=false;
   document.getElementById('showSoldOut').checked=false;
   updateFilterButton();
   render();
@@ -406,7 +402,6 @@ function render() {
   const category=activeFilters.category;
   const selected=activeFilters.selected;
   const purchaseStatus=activeFilters.purchaseStatus;
-  const showAvailable=activeFilters.showAvailable;
   const showSoldOut=activeFilters.showSoldOut;
 
   const visible=products.filter(p=>{
@@ -433,10 +428,7 @@ function render() {
       || (purchaseStatus==='unpurchased' && !purchased)
       || (purchaseStatus==='purchased' && purchased);
 
-    const availabilityHit =
-      (!showAvailable && !showSoldOut)
-      || (showAvailable && !soldOut)
-      || (showSoldOut && soldOut);
+    const availabilityHit = !showSoldOut || soldOut;
 
     const monthHit=!months.length || months.includes(p.releaseMonth);
     return hit && monthHit && unitHit && characterHit && categoryHit
@@ -594,21 +586,12 @@ document.getElementById('purchaseStatus').addEventListener('change',event=>{
   updateFilterButton();
   render();
 });
-document.getElementById('showAvailable').addEventListener('change',event=>{
-  activeFilters.showAvailable=event.target.checked;
-  updateFilterButton();
-  render();
-});
 document.getElementById('showSoldOut').addEventListener('change',event=>{
   activeFilters.showSoldOut=event.target.checked;
   updateFilterButton();
   render();
 });
-document.getElementById('resetAllFilters').onclick=()=>{
-  resetFilterForm();
-  const panel=document.querySelector('.main-reset');
-  if(panel) panel.open=false;
-};
+document.getElementById('resetAllFilters').onclick=resetFilterForm;
 document.getElementById('openFilters').onclick=openFilterOverlay;
 document.getElementById('closeFilters').onclick=closeFilterOverlay;
 document.getElementById('applyFilters').onclick=applyFilterForm;
@@ -722,10 +705,7 @@ function resetPurchased(){
   render();
 }
 
-function closeDataManagement(){
-  const panel=document.querySelector('.main-reset');
-  if(panel) panel.open=false;
-}
+function closeDataManagement(){}
 
 document.getElementById('resetQty').onclick=()=>{
   resetQuantities();
@@ -950,6 +930,36 @@ document.getElementById('closeShare').onclick=()=>document.getElementById('share
 document.getElementById('shareDialog').addEventListener('close',()=>{});
 
 
+
+function initializeFilterDefaults(){
+  activeFilters.months=[];
+  activeFilters.characters=[];
+  activeFilters.unit='';
+  activeFilters.category='';
+  activeFilters.selected='';
+  activeFilters.purchaseStatus='';
+  activeFilters.showSoldOut=false;
+
+  const category=document.getElementById('category');
+  const selected=document.getElementById('selected');
+  const purchaseStatus=document.getElementById('purchaseStatus');
+  const showSoldOut=document.getElementById('showSoldOut');
+
+  if(category) category.value='';
+  if(selected) selected.value='';
+  if(purchaseStatus) purchaseStatus.value='';
+  if(showSoldOut) showSoldOut.checked=false;
+}
+
+initializeFilterDefaults();
 setupFilters();
 syncBonusInputs();
 render();
+window.addEventListener('pageshow',event=>{
+  if(event.persisted){
+    initializeFilterDefaults();
+    syncFilterForm();
+    updateFilterButton();
+    render();
+  }
+});
