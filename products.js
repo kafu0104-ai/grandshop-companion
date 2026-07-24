@@ -3039,7 +3039,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "生活雑貨",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b026_u79d/a01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b026_u79d/a02.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b026",
     "random": false
   },
