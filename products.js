@@ -8720,8 +8720,8 @@ const PRODUCTS_RAW = [
     "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/m029_rz3g/thumb01.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=m029",
     "random": false
-  }
-    {
+  },
+  {
     "id": "b047-1",
     "displayOrder": 47,
     "code": "b047",
