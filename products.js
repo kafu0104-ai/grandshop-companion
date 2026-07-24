@@ -5045,7 +5045,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a01.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5062,7 +5062,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a02.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5079,7 +5079,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a03.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5096,7 +5096,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a04.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5113,7 +5113,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a05.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5130,7 +5130,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a06.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5147,7 +5147,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a07.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5164,7 +5164,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a08.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5181,7 +5181,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a09.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5198,7 +5198,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a10.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5215,7 +5215,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a11.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b043",
     "random": false
   },
@@ -5300,7 +5300,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b044_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a09.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b044",
     "random": false
   },
@@ -5317,7 +5317,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "ぬいぐるみ",
     "sales": "イベント・通販限定",
-    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b044_u79d/thumb01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b043_u79d/a10.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b044",
     "random": false
   },
