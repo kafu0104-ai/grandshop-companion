@@ -8734,7 +8734,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a01.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8751,7 +8751,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a02.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a02.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8768,7 +8768,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a03.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a03.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8785,7 +8785,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a04.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a04.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8802,7 +8802,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a05.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a05.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8819,7 +8819,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a06.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a06.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8836,7 +8836,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/a07.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/a07.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8853,7 +8853,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/b01.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/b01.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8870,7 +8870,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/b02.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/b02.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8887,7 +8887,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/b03.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/b03.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   },
@@ -8904,7 +8904,7 @@ const PRODUCTS_RAW = [
     "limit": 5,
     "category": "K.M☆U.P / ファッション雑貨",
     "sales": "イベント・通販限定",
-    "image": "./grandshop/2026/img/goods/b047_y7cz/b04.jpg",
+    "image": "https://www.utapri.com/grandshop/archive/2026/assets/img/goods/b047_y7cz/b04.jpg",
     "detail": "https://www.utapri.com/grandshop/item.php?id=b047",
     "random": false
   }
